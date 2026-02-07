@@ -19,4 +19,4 @@ func spawn_starting_units(player_ids: Array):
 		
 		units_node.add_child(unit, true)
 		
-		unit.global_position = Vector3(id % 10 * 15, 2, 0)
+		unit.global_position = Vector3(id % 10 * 15, 100, 0)

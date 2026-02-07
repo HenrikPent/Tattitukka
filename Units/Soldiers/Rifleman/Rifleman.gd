@@ -21,7 +21,7 @@ extends CharacterBody3D
 
 
 # Sisäiset muuttujat
-var gravity = 0 #ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 var is_map_active: bool = false
 var is_swimming: bool = false
 var current_vehicle: Node3D = null
@@ -34,7 +34,7 @@ var camera: Camera3D = null
 
 # --- Onready-viittaukset ---
 @onready var muzzle_flash: MeshInstance3D = $Gun.find_child("MuzzleFlash", true)
-@onready var gun_sound: AudioStreamPlayer3D = $Gun.find_child("AudioStreamPlayer3D", true)
+@onready var gun_sound: AudioStreamPlayer3D = $AudioStreamPlayer3D
 @onready var water_overlay = find_child("WaterOverlay", true, false)
 
 func _enter_tree():
