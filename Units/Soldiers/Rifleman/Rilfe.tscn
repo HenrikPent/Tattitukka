@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://dfiwka08puw5p"]
+
+[ext_resource type="Script" uid="uid://boi8d8rnvfh24" path="res://Units/Soldiers/Rifleman/Rifle.gd" id="1_dilqe"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ubsxm"]
+top_radius = 0.2
+bottom_radius = 0.3
+height = 8.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_dilqe"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yqexf"]
+transparency = 1
+blend_mode = 1
+emission_enabled = true
+emission = Color(0.80784315, 0.47058824, 0.101960786, 1)
+
+[node name="Gun" type="Node3D" unique_id=358075224]
+script = ExtResource("1_dilqe")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=76232456]
+transform = Transform3D(0.1, 0, 0, 0, -4.371139e-09, -0.1, 0, 0.1, -4.371139e-09, 0.3, -0.2, -0.4)
+layers = 3
+mesh = SubResource("CylinderMesh_ubsxm")
+
+[node name="MuzzleFlash" type="MeshInstance3D" parent="MeshInstance3D" unique_id=1207948190]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, -4.5, 0)
+visible = false
+mesh = SubResource("SphereMesh_dilqe")
+surface_material_override/0 = SubResource("StandardMaterial3D_yqexf")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="MeshInstance3D/MuzzleFlash" unique_id=2052377878]
+transform = Transform3D(5, 0, 0, 0, 5, -1.4210855e-14, 0, 1.4210855e-14, 5, 0, -0.5, 0)
+light_color = Color(0.99586564, 0.9442118, 0.87450105, 1)

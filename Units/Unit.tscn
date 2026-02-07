@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://biisqduuxggo0"]
+
+[ext_resource type="Script" uid="uid://cwbs48s02x7uj" path="res://Units/unit.gd" id="1_j3ort"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_egkjj"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_j3ort"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="Unit" type="Node3D" unique_id=83375250]
+script = ExtResource("1_j3ort")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=790533799]
+mesh = SubResource("BoxMesh_egkjj")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1261832406]
+replication_interval = 0.05
+replication_config = SubResource("SceneReplicationConfig_j3ort")
+public_visibility = false
+
+[node name="CameraTarget" type="Marker3D" parent="." unique_id=1553031715]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, -10)

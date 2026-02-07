@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://c31tu1vlhqpp7"]
+
+[ext_resource type="Script" uid="uid://dbgri0l3y5l04" path="res://MainMenuUI.gd" id="1_fr8op"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_vrvlg"]
+font_size = 42
+
+[node name="MainMenu" type="Control" unique_id=1117705064]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_fr8op")
+
+[node name="Label" type="Label" parent="." unique_id=877449385]
+layout_mode = 0
+offset_left = 426.0
+offset_top = 19.0
+offset_right = 727.0
+offset_bottom = 77.0
+text = "TausteluRutles"
+label_settings = SubResource("LabelSettings_vrvlg")
+
+[node name="Host" type="Button" parent="." unique_id=1979176617]
+layout_mode = 0
+offset_left = 480.0
+offset_top = 100.0
+offset_right = 531.0
+offset_bottom = 131.0
+text = "HOST
+"
+
+[node name="Join" type="Button" parent="." unique_id=1184929451]
+layout_mode = 0
+offset_left = 620.0
+offset_top = 100.0
+offset_right = 671.0
+offset_bottom = 131.0
+text = "JOIN
+
+
+"
+
+[node name="HostPanel" type="PanelContainer" parent="." unique_id=777807804]
+layout_mode = 0
+offset_left = 436.0
+offset_top = 150.0
+offset_right = 578.0
+offset_bottom = 201.0
+
+[node name="MapSelector" type="OptionButton" parent="HostPanel" unique_id=511015219]
+layout_mode = 2
+
+[node name="StartButton" type="Button" parent="HostPanel" unique_id=1728604631]
+layout_mode = 2
+text = "START GAME
+"
+
+[node name="JoinPanel" type="PanelContainer" parent="." unique_id=1251521628]
+layout_mode = 0
+offset_left = 490.0
+offset_top = 150.0
+offset_right = 810.0
+offset_bottom = 202.0
+
+[node name="ConnectButton" type="Button" parent="JoinPanel" unique_id=1541487123]
+layout_mode = 2
+text = "CONNECT"
+
+[node name="IP" type="LineEdit" parent="JoinPanel" unique_id=236583538]
+layout_mode = 2
+text = "IP"
+placeholder_text = "1.1.1.1"
+
+[connection signal="pressed" from="Host" to="." method="_on_host_pressed"]
+[connection signal="pressed" from="Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="HostPanel/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="JoinPanel/ConnectButton" to="." method="_on_connect_button_pressed"]

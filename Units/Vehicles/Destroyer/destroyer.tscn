@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://bichfw0qowbga"]
+
+[ext_resource type="PackedScene" uid="uid://cenv4hdpjxgsp" path="res://Units/Vehicles/Destroyer/blenderhull2.glb" id="1_0knfl"]
+[ext_resource type="Script" uid="uid://cwbs48s02x7uj" path="res://Units/unit.gd" id="1_12bra"]
+[ext_resource type="PackedScene" uid="uid://bax42thm5dabi" path="res://Units/Vehicles/Destroyer/destroyer turret.glb" id="2_6dt7c"]
+[ext_resource type="Script" uid="uid://bhl3xo5ar3x3v" path="res://Units/Vehicles/Destroyer/destroyer_turret.gd" id="3_6dt7c"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6dt7c"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_12bra"]
+properties/0/path = NodePath(".:rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12bra"]
+albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_0enge"]
+material = SubResource("StandardMaterial3D_12bra")
+top_radius = 0.2
+bottom_radius = 0.2
+height = 6.0
+
+[node name="Destroyer" type="CharacterBody3D" unique_id=523173322]
+script = ExtResource("1_12bra")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=87473862]
+replication_config = SubResource("SceneReplicationConfig_6dt7c")
+
+[node name="blenderhull2" parent="." unique_id=1480466671 instance=ExtResource("1_0knfl")]
+
+[node name="Turret" parent="." unique_id=2024360483 instance=ExtResource("2_6dt7c")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, -26)
+script = ExtResource("3_6dt7c")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Turret" unique_id=1744652263]
+replication_config = SubResource("SceneReplicationConfig_12bra")
+
+[node name="Gun" type="Node3D" parent="Turret" unique_id=943449069]
+transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)
+
+[node name="Barrel1" type="MeshInstance3D" parent="Turret/Gun" unique_id=524379877]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
+mesh = SubResource("CylinderMesh_0enge")
+
+[node name="Barrel2" type="MeshInstance3D" parent="Turret/Gun" unique_id=1850295446]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
+mesh = SubResource("CylinderMesh_0enge")

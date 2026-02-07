@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://d3ejfxntxy06c"]
+
+[ext_resource type="Script" uid="uid://bid70dxhbfjay" path="res://Main/main.gd" id="1_liyct"]
+[ext_resource type="PackedScene" uid="uid://ch0ickhsmyf2o" path="res://Maps/Kyyrymeri/Kyyry_meri.tscn" id="1_qvhan"]
+[ext_resource type="PackedScene" uid="uid://d3rl1r2mkwb08" path="res://Main/pause_menu.tscn" id="3_eunhr"]
+[ext_resource type="PackedScene" uid="uid://c31tu1vlhqpp7" path="res://Main/main_menu.tscn" id="3_k3v36"]
+[ext_resource type="PackedScene" uid="uid://cjjmnq26xg2ja" path="res://Maps/RandomMap/random_map.tscn" id="3_liyct"]
+[ext_resource type="Script" uid="uid://tsryb821r2g" path="res://Main/unit_spawner.gd" id="5_k3v36"]
+
+[node name="Main" type="Node3D" unique_id=950126725]
+script = ExtResource("1_liyct")
+maps = Array[PackedScene]([ExtResource("1_qvhan"), ExtResource("3_liyct")])
+
+[node name="MainMenu" parent="." unique_id=1117705064 instance=ExtResource("3_k3v36")]
+
+[node name="PauseMenu" parent="." unique_id=337249331 instance=ExtResource("3_eunhr")]
+
+[node name="MapRoot" type="Node3D" parent="." unique_id=1603803330]
+
+[node name="UnitSpawner" type="Node3D" parent="." unique_id=1060878593]
+script = ExtResource("5_k3v36")
+
+[node name="MultiplayerUnitSpawner" type="MultiplayerSpawner" parent="." unique_id=1069271668]
+_spawnable_scenes = PackedStringArray("uid://biisqduuxggo0", "uid://bichfw0qowbga", "uid://dr4k330rc7l32")
+spawn_path = NodePath("../Units")
+spawn_limit = 10
+
+[node name="Units" type="Node3D" parent="." unique_id=1909297137]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=975880595]
+_spawnable_scenes = PackedStringArray("uid://ckhgm3r31phu1")
+spawn_path = NodePath("../Players")
+
+[node name="Players" type="Node3D" parent="." unique_id=1393768622]
+
+[node name="MapContainer" type="Node3D" parent="." unique_id=2091894345]

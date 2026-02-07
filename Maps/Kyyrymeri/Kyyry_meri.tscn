@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://ch0ickhsmyf2o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_chin5"]
+albedo_color = Color(0.015686275, 0.007843138, 0.38039216, 0.44313726)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_8ud2x"]
+material = SubResource("StandardMaterial3D_chin5")
+size = Vector2(5000, 5000)
+
+[sub_resource type="Environment" id="Environment_chin5"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_8ud2x"]
+
+[sub_resource type="Compositor" id="Compositor_sudar"]
+
+[node name="Kyyry-meri" type="Node3D" unique_id=2060651302]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=857731762]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -12.663513, 0)
+mesh = SubResource("PlaneMesh_8ud2x")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=738074860]
+transform = Transform3D(0.8660254, -0.24999999, -0.4330127, 0.5, 0.43301266, 0.75, 0, -0.8660254, 0.49999997, -9.015015, 183.2694, 25.81118)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1620372325]
+environment = SubResource("Environment_chin5")
+camera_attributes = SubResource("CameraAttributesPractical_8ud2x")
+compositor = SubResource("Compositor_sudar")

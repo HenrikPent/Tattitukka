@@ -1,0 +1,113 @@
+[gd_scene format=3 uid="uid://dr4k330rc7l32"]
+
+[ext_resource type="Script" uid="uid://f68u2t8jqh1s" path="res://Units/Soldiers/Rifleman/Rifleman.gd" id="1_3qrri"]
+[ext_resource type="AudioStream" uid="uid://b7s2u8ewibnhi" path="res://Units/Soldiers/Rifleman/gunshot1.wav" id="2_6bkpl"]
+[ext_resource type="PackedScene" uid="uid://dfiwka08puw5p" path="res://Units/Soldiers/Rifleman/Rilfe.tscn" id="4_dso8u"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_0rwas"]
+properties/0/path = NodePath(".:global_rotation")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:global_position")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_xhfnw"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_kpjcp"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_kpjcp"]
+viewport_path = NodePath("Sprite3D/HPViewport")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kne1u"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_kpjcp"]
+material = SubResource("StandardMaterial3D_kne1u")
+
+[node name="Soldier" type="CharacterBody3D" unique_id=1506046133]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_3qrri")
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1710043302]
+process_mode = 3
+replication_config = SubResource("SceneReplicationConfig_0rwas")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=820235052]
+shape = SubResource("CapsuleShape3D_xhfnw")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=652799709]
+layers = 3
+mesh = SubResource("CapsuleMesh_kpjcp")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=182794767]
+
+[node name="Crosshair" type="ColorRect" parent="CanvasLayer" unique_id=594688035 groups=["crosshair_group"]]
+unique_name_in_owner = true
+light_mask = 4
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -2.0
+offset_top = -2.0
+offset_right = 2.0
+offset_bottom = 2.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=422738706]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+visible = false
+billboard = 1
+texture = SubResource("ViewportTexture_kpjcp")
+
+[node name="HPViewport" type="SubViewport" parent="Sprite3D" unique_id=279109847]
+transparent_bg = true
+size = Vector2i(200, 20)
+render_target_update_mode = 4
+
+[node name="Background" type="ColorRect" parent="Sprite3D/HPViewport" unique_id=826932770]
+custom_minimum_size = Vector2(200, 20)
+offset_right = 40.0
+offset_bottom = 40.0
+color = Color(0, 0, 0, 1)
+
+[node name="Bar" type="ColorRect" parent="Sprite3D/HPViewport/Background" unique_id=273500176]
+custom_minimum_size = Vector2(200, 20)
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 40.0
+color = Color(0, 1, 0, 1)
+
+[node name="MapMarker" type="Node3D" parent="." unique_id=2081457737]
+visible = false
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="MapMarker" unique_id=1703523246]
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
+layers = 512
+cast_shadow = 0
+mesh = SubResource("SphereMesh_kpjcp")
+
+[node name="UnderwaterCanvas" type="CanvasLayer" parent="." unique_id=311365865]
+
+[node name="WaterOverlay" type="ColorRect" parent="UnderwaterCanvas" unique_id=1497104228]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 1, 0.3372549)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=1547632289]
+stream = ExtResource("2_6bkpl")
+
+[node name="Gun" parent="." unique_id=730545801 instance=ExtResource("4_dso8u")]
