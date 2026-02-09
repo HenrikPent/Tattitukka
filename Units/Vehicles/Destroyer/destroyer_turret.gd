@@ -2,6 +2,8 @@ extends Node3D
 
 @export var rotation_speed: float = 2.0
 
+
+
 func _physics_process(delta):
 	# Vain laivan omistaja ohjaa tykkejä
 	if not is_multiplayer_authority():

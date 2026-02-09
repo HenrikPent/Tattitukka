@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://c31tu1vlhqpp7" path="res://Main/main_menu.tscn" id="3_k3v36"]
 [ext_resource type="PackedScene" uid="uid://cjjmnq26xg2ja" path="res://Maps/RandomMap/random_map.tscn" id="3_liyct"]
 [ext_resource type="Script" uid="uid://tsryb821r2g" path="res://Main/unit_spawner.gd" id="5_k3v36"]
+[ext_resource type="PackedScene" uid="uid://biisqduuxggo0" path="res://Units/Unit.tscn" id="7_f6fdm"]
+[ext_resource type="PackedScene" uid="uid://xotaey12ys12" path="res://Units/Vehicles/testi/testi.tscn" id="7_ib3t1"]
 
 [node name="Main" type="Node3D" unique_id=950126725]
 script = ExtResource("1_liyct")
@@ -19,9 +21,11 @@ maps = Array[PackedScene]([ExtResource("1_qvhan"), ExtResource("3_liyct")])
 
 [node name="UnitSpawner" type="Node3D" parent="." unique_id=1060878593]
 script = ExtResource("5_k3v36")
+fighter = ExtResource("7_f6fdm")
+testi = ExtResource("7_ib3t1")
 
 [node name="MultiplayerUnitSpawner" type="MultiplayerSpawner" parent="." unique_id=1069271668]
-_spawnable_scenes = PackedStringArray("uid://biisqduuxggo0", "uid://bichfw0qowbga", "uid://dr4k330rc7l32", "uid://dex3uao8ute0e", "uid://xotaey12ys12")
+_spawnable_scenes = PackedStringArray("uid://biisqduuxggo0", "uid://bichfw0qowbga", "uid://dr4k330rc7l32")
 spawn_path = NodePath("../Units")
 spawn_limit = 10
 

@@ -19,7 +19,6 @@ script = ExtResource("1_j3ort")
 mesh = SubResource("BoxMesh_egkjj")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1261832406]
-replication_interval = 0.05
 replication_config = SubResource("SceneReplicationConfig_j3ort")
 public_visibility = false
 

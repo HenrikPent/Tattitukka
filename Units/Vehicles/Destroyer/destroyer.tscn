@@ -12,11 +12,9 @@ properties/0/replication_mode = 1
 properties/1/path = NodePath(".:rotation")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_12bra"]
-properties/0/path = NodePath(".:rotation")
-properties/0/spawn = true
-properties/0/replication_mode = 1
+properties/2/path = NodePath("Turret:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12bra"]
 albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
@@ -38,9 +36,6 @@ replication_config = SubResource("SceneReplicationConfig_6dt7c")
 [node name="Turret" parent="." unique_id=2024360483 instance=ExtResource("2_6dt7c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, -26)
 script = ExtResource("3_6dt7c")
-
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="Turret" unique_id=1744652263]
-replication_config = SubResource("SceneReplicationConfig_12bra")
 
 [node name="Gun" type="Node3D" parent="Turret" unique_id=943449069]
 transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)

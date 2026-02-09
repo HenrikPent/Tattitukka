@@ -21,7 +21,7 @@ extends CharacterBody3D
 
 
 # Sisäiset muuttujat
-var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
+var gravity = 0 #ProjectSettings.get_setting("physics/3d/default_gravity")
 var is_map_active: bool = false
 var is_swimming: bool = false
 var current_vehicle: Node3D = null

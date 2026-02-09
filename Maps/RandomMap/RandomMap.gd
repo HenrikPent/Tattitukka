@@ -62,3 +62,29 @@ func generate(seed_val: int):
 	
 	print("Maasto valmis siemenellä: ", seed_val)
 	print("-------------------------------")
+	
+	# 6. Spawnpisteet
+	print("Luodaan spawn-pisteet...")
+
+	# Tehdään tyhjä node, jonka alle spawn-pisteet tulevat (helpottaa etsimistä)
+	var spawn_group = Node3D.new()
+	spawn_group.name = "SpawnPoints"
+	add_child(spawn_group)
+
+	# Esimerkki: Luodaan 2 pistettä eri puolille saarta
+	var spawn_locations = [Vector2(-50, -50), Vector2(50, 50)]
+
+	for i in range(spawn_locations.size()):
+		var pos_2d = spawn_locations[i]
+		
+		# Lasketaan korkeus samalla tavalla kuin maastossa (Noise)
+		var noise_val = noise.get_noise_2d(pos_2d.x, pos_2d.y)
+		var spawn_y = noise_val * height_multiplier
+		
+		var marker = Marker3D.new()
+		marker.name = "Spawn_" + str(i)
+		spawn_group.add_child(marker)
+		
+		# Asetetaan markeri hieman maan pinnan yläpuolelle (+2.0)
+		marker.global_position = Vector3(pos_2d.x, spawn_y + 2.0, pos_2d.y)
+		print("Spawn_", i, " luotu kohtaan: ", marker.global_position)
