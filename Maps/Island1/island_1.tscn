@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dbvfi70jw42ny"]
+
+[node name="Island1" type="Node3D" unique_id=1447622151]
+
+[node name="TerraBrush" type="TerraBrush" parent="." unique_id=336907095]
+dataPath = "res://Maps/Island1"
+metadata/_edit_lock_ = true
+
+[node name="TerraBrushEditor" type="TerraBrushEditor" parent="." unique_id=1048572803 node_paths=PackedStringArray("terraBrushNode")]
+terraBrushNode = NodePath("../TerraBrush")

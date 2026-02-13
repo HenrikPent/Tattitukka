@@ -5,31 +5,24 @@ extends Node3D
 var controlled_unit: Node3D = null
 
 func _ready():
-	# Asetetaan authority nimen perusteella
 	set_multiplayer_authority(name.to_int())
 	
 	if is_multiplayer_authority():
-			$CameraRig/Camera3D.current = true
-			# Aloitetaan haku
-			find_my_unit_loop()
+		$CameraRig/Camera3D.current = true
+		# Ei etsitä nimen perusteella, vaan kytkeydytään manageriin
+		sync_with_manager()
 
-func find_my_unit_loop():
+func sync_with_manager():
 	var my_id = multiplayer.get_unique_id()
 	
-	# Odotetaan hetki, että Spawner ehtii tehdä työnsä rauhassa
-	await get_tree().create_timer(0.5).timeout 
-	
-	var units_node = get_node_or_null("/root/Main/Units")
-	if not units_node:
-		return
-
-	# Etsitään unittia, kunnes se löytyy
-	var my_unit = null
-	while my_unit == null:
-		my_unit = units_node.get_node_or_null(str(my_id))
-		if my_unit:
-			controlled_unit = my_unit
-			$CameraRig.controlled_unit = my_unit
-			print("Kamera lukittu unittiin: ", my_unit.name)
-			break
-		await get_tree().process_frame
+	while true:
+		# Tarkistetaan onko managerilla jo tieto meidän yksiköstä
+		if PlayerManager.controlled_units.has(my_id):
+			var unit = PlayerManager.controlled_units[my_id]
+			if is_instance_valid(unit):
+				controlled_unit = unit
+				camera_rig.controlled_unit = unit
+				# Jos kamera on jo kerran lukittu, voimme lopettaa loopin 
+				# TAI jättää tämän päälle, jos haluat että kamera seuraa vaihtoa automaattisesti
+		
+		await get_tree().create_timer(0.2).timeout

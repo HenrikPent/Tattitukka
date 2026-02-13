@@ -23,7 +23,6 @@ script = ExtResource("5_k3v36")
 [node name="MultiplayerUnitSpawner" type="MultiplayerSpawner" parent="." unique_id=1069271668]
 _spawnable_scenes = PackedStringArray("uid://biisqduuxggo0", "uid://bichfw0qowbga", "uid://dr4k330rc7l32", "uid://dex3uao8ute0e", "uid://xotaey12ys12")
 spawn_path = NodePath("../Units")
-spawn_limit = 10
 
 [node name="Units" type="Node3D" parent="." unique_id=1909297137]
 

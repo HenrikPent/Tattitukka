@@ -5,19 +5,25 @@
 [ext_resource type="Script" uid="uid://2s8fr0xybxc4" path="res://Units/Vehicles/FighterV1/FighterPropeller.gd" id="3_htp35"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qq0nq"]
-properties/0/path = NodePath(".:position")
+properties/0/path = NodePath(".:sync_thrust")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
+properties/1/path = NodePath(".:is_player_controlled")
 properties/1/spawn = true
 properties/1/replication_mode = 1
+properties/2/path = NodePath(".:position")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath(".:rotation")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_htp35"]
 albedo_color = Color(0.14767182, 0.14767179, 0.14767179, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_r7d6f"]
 material = SubResource("StandardMaterial3D_htp35")
-size = Vector2(0.3, 5)
+size = Vector2(0.1, 2.5)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qq0nq"]
 radius = 2.3149414
@@ -31,7 +37,7 @@ script = ExtResource("1_i7mby")
 replication_config = SubResource("SceneReplicationConfig_qq0nq")
 
 [node name="Tinkercad GLTF Scene" parent="." unique_id=388910213 instance=ExtResource("2_i7mby")]
-transform = Transform3D(-4.371138e-08, 0, 1, 0, 1, 0, -1, 0, -4.371138e-08, 0, 0, 0)
+transform = Transform3D(-2.1855694e-08, 0, 0.5, 0, 0.5, 0, -0.5, 0, -2.1855694e-08, 0, 0, 0)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=735117828]
 
@@ -44,10 +50,10 @@ offset_bottom = 647.0
 value = 50.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=94676051]
-transform = Transform3D(1, 1.7484555e-07, 1.7484555e-07, -1.7484555e-07, -4.371139e-08, 1, 1.7484555e-07, -1, -4.3711356e-08, 0.11503315, 0, -10.014)
+transform = Transform3D(1, 1.7484555e-07, 1.7484555e-07, -1.7484555e-07, -4.371139e-08, 1, 1.7484555e-07, -1, -4.3711356e-08, 0.054547586, 0, -5.1039267)
 mesh = SubResource("PlaneMesh_r7d6f")
 script = ExtResource("3_htp35")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1443363817]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -7.1054274e-15, 2.9095961e-08, -0.66563797)
+transform = Transform3D(0.5, 0, 0, 0, -2.1855694e-08, -0.5, 0, 0.5, -2.1855694e-08, -7.1054274e-15, 2.9095961e-08, -0.66563797)
 shape = SubResource("CapsuleShape3D_qq0nq")
