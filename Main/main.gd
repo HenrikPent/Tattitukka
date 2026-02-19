@@ -11,6 +11,11 @@ func _ready():
 	multiplayer.peer_disconnected.connect(remove_player)
 
 func add_player(id: int):
+	
+	if player_scene == null:
+		print("VIRHE: player_scene on null! Tarkista Main-noden asetukset Inspectorissa.")
+		return
+	
 	if $Players.has_node(str(id)):
 		print("VAROITUS: Pelaaja ", id, " on jo olemassa! Skipataan luonti.")
 		return

@@ -22,14 +22,16 @@ func request_possession(unit_path: NodePath):
 func _perform_switch(player_id: int, new_unit: Node3D):
 	if not multiplayer.is_server(): return
 
-	# Vapautetaan vanha laiva takaisin AI:lle
+	# Vapautetaan vanha unit takaisin AI:lle
 	if controlled_units.has(player_id):
 		var old_unit = controlled_units[player_id]
 		if is_instance_valid(old_unit):
 			old_unit.is_player_controlled = false
 			old_unit.set_multiplayer_authority(1)
-
-	# Otetaan uusi laiva haltuun
+			# Kerrotaan muillekin että tämä unitti vapautui AI:lle (ID 1)
+			_update_controlled_unit_list.rpc(0, old_unit.get_path()) # 0 p_id:lle voi merkitä vapautusta
+	
+	# Otetaan uusi unit haltuun
 	new_unit.set_multiplayer_authority(player_id)
 	new_unit.is_player_controlled = true
 	
@@ -43,9 +45,13 @@ func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	if unit:
 		controlled_units[p_id] = unit
 		
-		# Jos tämä päivitys koskee paikallista pelaajaa, asetetaan suora viite
+		# TÄMÄ RIVI PUUTTUU:
+		# Asetetaan yksikön authority vastaamaan uutta omistajaa jokaisen clientin pelissä
+		unit.set_multiplayer_authority(p_id) 
+		
 		if p_id == multiplayer.get_unique_id():
 			controlled_unit = unit
+			unit.is_player_controlled = true # Varmistetaan että tämä on päällä paikallisesti
 			print("Paikallinen ohjaus asetettu yksikölle: ", unit.name)
 
 # --- NÄPPÄIMET 1 JA 2 ---

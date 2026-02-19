@@ -32,8 +32,8 @@ func spawn_starting_units(player_ids: Array):
 		# 2. Carrier
 		for i in range(1):
 			var unit_name = "carrier_" + str(id) + "_" + str(i)
-			var spawn_pos = Vector3(base_x, 100, -60) 
-			var unit = spawn_unit("rifleman", id, spawn_pos, unit_name)
+			var spawn_pos = Vector3(base_x, 0, -60) 
+			var unit = spawn_unit("carrier", id, spawn_pos, unit_name)
 			
 			# Asetetaan Carrier oletukseksi
 			first_unit = unit
