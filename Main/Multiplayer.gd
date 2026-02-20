@@ -1,16 +1,24 @@
 #multiplayer
 extends Node
 
+signal player_count_updated(count: int)
+signal connection_lost # Uusi signaali
+
 const PORT = 42069
 var peer = ENetMultiplayerPeer.new()
 var game_ready := false
 var all_player_ids := []
-
+var max_players = 2:
+	set(value):
+		max_players = value
+		# Aina kun arvo muuttuu, ajetaan tarkistus
+		check_game_ready()
 
 func host_game():
 	peer.create_server(PORT)
 	multiplayer.multiplayer_peer = peer
 	all_player_ids.append(1) # <--- hostin id
+	check_game_ready() # Tämä lähettää signaalin (1) menu UI:lle 
 	print("Hostaus alkanut")
 
 func join_game(ip):
@@ -21,18 +29,33 @@ func join_game(ip):
 func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	multiplayer.server_disconnected.connect(_on_server_disconnected)
+
 
 func _on_peer_connected(id):
+	# Tarkistetaan ylittyykö pelaajaraja
+	if all_player_ids.size() >= max_players:
+		print("Peli on täynnä! Potkitaan pelaaja: ", id)
+		multiplayer.multiplayer_peer.disconnect_peer(id)
+		return
+	
 	if not all_player_ids.has(id):
 		all_player_ids.append(id)
 		print("Pelaaja yhdistetty listaan: ", id)
 	
-	# Jos pelaajia on tarpeeksi (esim. vähintään 1 muukin), peli voi alkaa
-	if all_player_ids.size() >= 1: # Voit säätää tätä
-		game_ready = true
+	# katotaan onko kaikki joinannu
+	check_game_ready()
 
 func _on_peer_disconnected(id):
 	all_player_ids.erase(id)
+	check_game_ready()
+
+func _on_server_disconnected():
+	print("Yhteys poikki.")
+	multiplayer.multiplayer_peer = null
+	all_player_ids.clear()
+	all_player_ids.append(1) # Palautetaan host-id varmuuden vuoksi
+	connection_lost.emit() # Ilmoitetaan valikolle
 
 
 # TÄMÄ AJETAAN VAIN CLIENTEILLA (koska serveri kutsuu tätä RPC:llä)
@@ -41,7 +64,15 @@ func start_game_rpc():
 	print("Client vastaanotti aloitusviestin!")
 	_setup_game_world_locally()
 
-
+func check_game_ready():
+	if all_player_ids.size() == max_players:
+		game_ready = true
+	else:
+		game_ready = false
+	print("Game ready tila: ", game_ready, " (Pelaajia: ", all_player_ids.size(), "/", max_players, ")")
+	
+	# Lähetetään tieto uudesta määrästä käyttöliittymälle
+	player_count_updated.emit(all_player_ids.size())
 
 # TÄMÄ AJETAAN SERVERILLÄ (kun host painaa nappia)
 # Päivitetty start_game ottamaan map_index

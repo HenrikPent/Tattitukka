@@ -10,51 +10,51 @@
 [ext_resource type="AudioStream" uid="uid://cd8m0a65tmmoq" path="res://Units/Vehicles/Destroyer/Gun_sound.wav" id="7_dg6dm"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6dt7c"]
-properties/0/path = NodePath(".:sync_steering")
+properties/0/path = NodePath("Turret2:sync_yaw")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:sync_speed_index")
+properties/1/path = NodePath("Turret3:sync_yaw")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath(".:is_player_controlled")
+properties/2/path = NodePath("Turret4:sync_yaw")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath(".:position")
+properties/3/path = NodePath("Turret2:sync_pitch")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath(".:rotation")
+properties/4/path = NodePath("Turret3:sync_pitch")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("Turret1:rotation")
+properties/5/path = NodePath("Turret4:sync_pitch")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath("Turret1/Gun:rotation")
+properties/6/path = NodePath("Turret1:sync_pitch")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath("Turret2:rotation")
+properties/7/path = NodePath("Turret1:sync_yaw")
 properties/7/spawn = true
 properties/7/replication_mode = 1
-properties/8/path = NodePath("Turret2/Gun:rotation")
+properties/8/path = NodePath(".:sync_steering")
 properties/8/spawn = true
 properties/8/replication_mode = 1
-properties/9/path = NodePath("Turret3:rotation")
+properties/9/path = NodePath(".:sync_speed_index")
 properties/9/spawn = true
 properties/9/replication_mode = 1
-properties/10/path = NodePath("Turret3/Gun:rotation")
+properties/10/path = NodePath(".:is_player_controlled")
 properties/10/spawn = true
 properties/10/replication_mode = 1
-properties/11/path = NodePath("Turret4:rotation")
+properties/11/path = NodePath(".:position")
 properties/11/spawn = true
 properties/11/replication_mode = 1
-properties/12/path = NodePath("Turret4/Gun:rotation")
+properties/12/path = NodePath(".:rotation")
 properties/12/spawn = true
 properties/12/replication_mode = 1
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dg6dm"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_12bra"]
 albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_0enge"]
-material = SubResource("StandardMaterial3D_dg6dm")
+material = SubResource("StandardMaterial3D_12bra")
 top_radius = 0.2
 bottom_radius = 0.2
 height = 6.0
@@ -77,7 +77,7 @@ script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 
 [node name="Gun" type="Node3D" parent="Turret1" unique_id=943449069]
-transform = Transform3D(-5, 0, 2.1855695e-07, 0, 5, 0, -4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret1/Gun" unique_id=524379877]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
@@ -117,9 +117,10 @@ stream = ExtResource("7_dg6dm")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 49.375122)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+forbidden_center = 180.0
 
 [node name="Gun" type="Node3D" parent="Turret2" unique_id=2006073625]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret2/Gun" unique_id=582663625]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
@@ -161,7 +162,7 @@ script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 
 [node name="Gun" type="Node3D" parent="Turret3" unique_id=1334708033]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret3/Gun" unique_id=1458352186]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
@@ -201,9 +202,10 @@ stream = ExtResource("7_dg6dm")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 68.131)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+forbidden_center = 180.0
 
 [node name="Gun" type="Node3D" parent="Turret4" unique_id=620379278]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(5, 0, 0, 0, -5, 2.1855695e-07, 0, -4.371139e-07, -2.5, 0, 3.9, 0)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret4/Gun" unique_id=1855092217]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)

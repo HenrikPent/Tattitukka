@@ -10,6 +10,26 @@ func _ready():
 	# Kun joku yhdistää, serveri hoitaa pelaajan luomisen
 	multiplayer.peer_disconnected.connect(remove_player)
 
+func start_singleplayer(map_index: int):
+	print("Aloitetaan Single Player...")
+	
+	# Luodaan "offline" serveri, jotta is_server() on true ja spawnerit toimivat
+	#var peer = SceneMultiplayer.new()
+	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
+	
+	var seed_val = randi()
+	load_map(map_index, seed_val)
+	
+	add_player(1) # Luodaan kamerarig
+	
+	# Kutsutaan unittien spawneria
+	# Annetaan sille lista, jossa on vain sinun ID (1)
+	if has_node("UnitSpawner"):
+		$UnitSpawner.spawn_starting_units([1])
+	
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
 func add_player(id: int):
 	
 	if player_scene == null:
