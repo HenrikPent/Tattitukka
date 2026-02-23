@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://bfryck36y1sfo"]
+
+[ext_resource type="Script" uid="uid://cibvsv7h7okkv" path="res://GameUI/TacticalMap/tactical_map.gd" id="1_dj2or"]
+[ext_resource type="Script" uid="uid://c4gcdm6gybknh" path="res://GameUI/TacticalMap/line_layer.gd" id="2_2g6ok"]
+
+[node name="TacticalMap" type="Control" unique_id=246792766]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 250.0
+offset_right = 850.0
+offset_bottom = 600.0
+script = ExtResource("1_dj2or")
+
+[node name="BackGround" type="ColorRect" parent="." unique_id=410041088]
+layout_mode = 0
+offset_left = -260.0
+offset_right = 914.0
+offset_bottom = 663.0
+mouse_filter = 2
+color = Color(0.2231029, 0.2231029, 0.22310287, 1)
+
+[node name="Ocean" type="ColorRect" parent="." unique_id=1111293429]
+layout_mode = 0
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2
+color = Color(0.16686288, 0.34519425, 0.93914104, 1)
+
+[node name="IconLayer" type="Control" parent="." unique_id=1544002240]
+anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2
+
+[node name="LineLayer" type="Control" parent="." unique_id=1051179518]
+anchors_preset = 0
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2
+script = ExtResource("2_2g6ok")

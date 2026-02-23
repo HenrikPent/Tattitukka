@@ -3,9 +3,9 @@ extends Node
 
 # Rekisteröidään yksiköt, jotta MultiplayerSpawner osaa ne synkronoida
 @onready var scenes = {
-	"destroyer": preload("res://Units/Vehicles/Destroyer/destroyer.tscn"),
-	"fighter": preload("res://Units/Vehicles/FighterV1/figterV1.tscn"),
-	"carrier": preload("res://Units/Vehicles/Carrier/Carrier.tscn"),
+	"destroyer": preload("res://Units/Vehicles/Ships/Destroyer/destroyer.tscn"),
+	"fighter": preload("res://Units/Vehicles/Planes/FighterV1/figterV1.tscn"),
+	"carrier": preload("res://Units/Vehicles/Ships/Carrier/Carrier.tscn"),
 	"rifleman": preload("res://Units/Soldiers/Rifleman/Rifleman.tscn")
 	}
 
@@ -18,12 +18,12 @@ func spawn_starting_units(player_ids: Array):
 		# Luodaan pelaajalle "paikka" maailmassa (0-4)
 		# Käytetään jakojäännöstä 5:llä ja kerrotaan se 100:lla (väliä 100m)
 		var player_slot = player_ids.find(id) # Tai: id % 5
-		var base_x = player_slot * 100.0
+		var base_x = player_slot * 1000.0
 		
 		# 1. Destroyerit
-		for i in range(2):
+		for i in range(6):
 			var unit_name = "dest_" + str(id) + "_" + str(i)
-			var spawn_pos = Vector3(base_x + 20, 0, i * 40) # Pieni offset carrieriin
+			var spawn_pos = Vector3(base_x + 20, 0, i * 200) # Pieni offset carrieriin
 			var unit = spawn_unit("destroyer", id, spawn_pos, unit_name)
 			
 			if first_unit == null:

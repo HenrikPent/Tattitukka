@@ -22,37 +22,50 @@ func request_possession(unit_path: NodePath):
 func _perform_switch(player_id: int, new_unit: Node3D):
 	if not multiplayer.is_server(): return
 
-	# Vapautetaan vanha unit takaisin AI:lle
+	# --- VANHAN YKSIKÖN VAPAUTUS ---
 	if controlled_units.has(player_id):
 		var old_unit = controlled_units[player_id]
 		if is_instance_valid(old_unit):
-			old_unit.is_player_controlled = false
+			# TÄRKEÄÄ: Asetetaan authority takaisin palvelimelle (1) ja pois pelaajalta
 			old_unit.set_multiplayer_authority(1)
-			# Kerrotaan muillekin että tämä unitti vapautui AI:lle (ID 1)
-			_update_controlled_unit_list.rpc(0, old_unit.get_path()) # 0 p_id:lle voi merkitä vapautusta
+			old_unit.is_player_controlled = false
+			# Päivitetään muille clientteille, että tämä unitti on nyt AI (p_id 0 tai 1)
+			_update_controlled_unit_list.rpc(0, old_unit.get_path())
 	
-	# Otetaan uusi unit haltuun
+	# --- UUDEN YKSIKÖN HALTUUNOTTO ---
 	new_unit.set_multiplayer_authority(player_id)
 	new_unit.is_player_controlled = true
 	
-	# Päivitetään lista kaikille, jotta Player.gd löytää uuden yksikön
+	# Päivitetään lista kaikille
 	_update_controlled_unit_list.rpc(player_id, new_unit.get_path())
 
 # 3. SYNKRONOINTI: Päivitetään tieto kaikille klienteille
 @rpc("authority", "call_local", "reliable")
 func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	var unit = get_node_or_null(u_path)
-	if unit:
+	if not unit: return
+	
+	if p_id == 0:
+		# Yksikkö vapautui AI:lle
+		unit.set_multiplayer_authority(1) # AI on aina palvelimen (1) alla
+		unit.is_player_controlled = false
+		# Poistetaan vanha kytkös listasta jos sellainen oli
+		for key in controlled_units.keys():
+			if controlled_units[key] == unit:
+				controlled_units.erase(key)
+	else:
+		# Yksikkö meni pelaajalle
 		controlled_units[p_id] = unit
+		unit.set_multiplayer_authority(p_id)
 		
-		# TÄMÄ RIVI PUUTTUU:
-		# Asetetaan yksikön authority vastaamaan uutta omistajaa jokaisen clientin pelissä
-		unit.set_multiplayer_authority(p_id) 
-		
+		# Jos minä olen se, joka sai tämän yksikön
 		if p_id == multiplayer.get_unique_id():
 			controlled_unit = unit
-			unit.is_player_controlled = true # Varmistetaan että tämä on päällä paikallisesti
-			print("Paikallinen ohjaus asetettu yksikölle: ", unit.name)
+			unit.is_player_controlled = true
+		else:
+			# Jos joku muu sai tämän yksikön, se ei ole minun AI:ni eikä pelaajani
+			unit.is_player_controlled = true 
+			# (Tämä pidetään true:na, jotta _physics_process ei aja AI-logiikkaa muilla kuin authoritylla)
 
 # --- NÄPPÄIMET 1 JA 2 ---
 func _unhandled_input(event: InputEvent):

@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://bbfs4b24lb62r"]
+
+[ext_resource type="Script" uid="uid://c42mrmrjyw5u5" path="res://GameUI/Help/help_ui.gd" id="1_8leat"]
+
+[node name="HelpUI" type="Control" unique_id=2009493521]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_8leat")
+
+[node name="General" type="Label" parent="." unique_id=330049882]
+layout_mode = 0
+offset_left = 12.0
+offset_right = 203.0
+offset_bottom = 23.0
+text = "GENERAL"
+
+[node name="Label" type="Label" parent="General" unique_id=734285458]
+layout_mode = 0
+offset_top = 23.0
+offset_right = 178.0
+offset_bottom = 98.0
+text = "H - show/hide help 
+tab - tactical map
+caps lock - formation"
+
+[node name="Ships" type="Label" parent="." unique_id=923755178]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 125.0
+offset_right = 203.0
+offset_bottom = 148.0
+text = "SHIPS"
+
+[node name="Label" type="Label" parent="Ships" unique_id=30365383]
+layout_mode = 0
+offset_top = 23.0
+offset_right = 178.0
+offset_bottom = 98.0
+text = "W - add speed
+S - reduce speed
+A, D - left, right"

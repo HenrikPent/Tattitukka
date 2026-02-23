@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://d2g4ttc31irpv"]
+
+[ext_resource type="Script" uid="uid://b67v0c14xr6xk" path="res://GameUI/FormationMap/formation_map.gd" id="1_xot6j"]
+
+[node name="FormationMap" type="Control" unique_id=678211312]
+layout_mode = 3
+anchor_left = 0.246
+anchor_right = 0.76600003
+anchor_bottom = 0.92600006
+offset_left = -0.3919983
+offset_right = -0.43200684
+offset_bottom = -0.048034668
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_xot6j")
+
+[node name="Ocean" type="ColorRect" parent="." unique_id=162457095]
+layout_mode = 1
+anchors_preset = -1
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.3529412)
+
+[node name="IconLayer" type="Control" parent="." unique_id=375562536]
+layout_mode = 1
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2
+
+[node name="LineLayer" type="Control" parent="." unique_id=1530547044]
+layout_mode = 1
+offset_right = 600.0
+offset_bottom = 600.0
+mouse_filter = 2

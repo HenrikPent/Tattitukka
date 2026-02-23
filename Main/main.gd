@@ -20,12 +20,25 @@ func start_singleplayer(map_index: int):
 	var seed_val = randi()
 	load_map(map_index, seed_val)
 	
-	add_player(1) # Luodaan kamerarig
+	add_player(1) # Pelaaja
 	
+	# Luodaan lista, jossa on pelaaja (1) ja AI:t (-1, -2 jne.)
+	var participants = [1]
+	var ai_count = 1
+	for i in range(1, ai_count + 1):
+		participants.append(-i)
 	# Kutsutaan unittien spawneria
 	# Annetaan sille lista, jossa on vain sinun ID (1)
 	if has_node("UnitSpawner"):
-		$UnitSpawner.spawn_starting_units([1])
+		$UnitSpawner.spawn_starting_units(participants)
+	
+	
+	if has_node("TacticalMap"):
+		$TacticalMap.setup($Units)
+		print("DEBUG: TacticalMap setup valmis. Kohde: ", $Units.get_path())
+	
+	if has_node("HelpUI"):
+		$HelpUI.visible = true
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -59,11 +72,30 @@ func remove_player(id: int):
 		$Players.get_node(str(id)).queue_free()
 
 func _input(event):
-	if event.is_action_pressed("escape"): # ESC-näppäin
-		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		else:
-			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	# Tactical Map (TAB)
+	if event.is_action_pressed("tactical_map"):
+		$TacticalMap.visible = !$TacticalMap.visible
+		_update_mouse_mode()
+	
+	# Formation Map (Caps Lock)
+	if event.is_action_pressed("formation_map"):
+		$FormationMap.visible = true
+		_update_mouse_mode()
+	elif event.is_action_released("formation_map"):
+		$FormationMap.visible = false
+		_update_mouse_mode()
+		
+	# Help UI (H) 
+	if event.is_action_pressed("ui_help") or (event is InputEventKey and event.pressed and event.keycode == KEY_H):
+		if has_node("HelpUI"):
+			$HelpUI.visible = !$HelpUI.visible
+
+# Apufunktio hiiren tilan hallintaan, ettei koodia tarvitse toistaa
+func _update_mouse_mode():
+	if $TacticalMap.visible or $FormationMap.visible:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 
 #---  MAPIN LATAUS  ---# 
