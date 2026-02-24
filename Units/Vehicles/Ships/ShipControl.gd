@@ -16,8 +16,18 @@ extends CharacterBody3D # Käytetään CharacterBodya, se on vakaampi multiplaye
 @export var sync_speed_index := 2      # 0 ... 5
 @export var is_player_controlled := false
 
+
 # --- FYSIIKKA-ASETUKSET ---
-var speed_levels = [-18.0, -8.0, 0.0, 10.0, 20.0, 38.0]
+# Esimerkki: 7 porrasta (0-6)
+var speed_levels = [
+	-20.0, # Full Reverse (0)
+	-10.0,  # Half Reverse (1)
+	0.0,   # STOP (2)
+	10.0,  # 1/4 Ahead (3)
+	20.0,  # 1/2 Ahead (4)
+	30.0,  # 3/4 Ahead (5)
+	40.0   # FULL AHEAD (6)
+]
 var acceleration := 5.0
 var turn_speed := 0.5
 var current_speed := 0.0
@@ -62,9 +72,9 @@ func _read_player_input() -> void:
 	if is_player_controlled:
 		sync_steering = steering_input
 		if throttle_up:
-			sync_speed_index = clampi(sync_speed_index + 1, 0, 5)
+			sync_speed_index = clampi(sync_speed_index + 1, 0, 6)
 		if throttle_down:
-			sync_speed_index = clampi(sync_speed_index - 1, 0, 5)
+			sync_speed_index = clampi(sync_speed_index - 1, 0, 6)
 
 func _run_ai_logic() -> void:
 	# 1. PÄIVITYS: Jos meillä on seurattava kohde, päivitetään maali sen sijainnin mukaan
@@ -91,7 +101,7 @@ func _run_ai_logic() -> void:
 		if not is_instance_valid(follow_target):
 			# Jos emme seuraa ketään (eli olimme matkalla vain pisteeseen), nollataan kohde
 			ai_target_pos = Vector3.ZERO
-			print(name, " saavutti kohteen ja pysähtyi.")
+			
 			
 		return
 

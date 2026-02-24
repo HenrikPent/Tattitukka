@@ -33,12 +33,12 @@ func start_singleplayer(map_index: int):
 		$UnitSpawner.spawn_starting_units(participants)
 	
 	
-	if has_node("TacticalMap"):
-		$TacticalMap.setup($Units)
+	if has_node("UI/TacticalMap"):
+		$UI/TacticalMap.setup($Units)
 		print("DEBUG: TacticalMap setup valmis. Kohde: ", $Units.get_path())
 	
-	if has_node("HelpUI"):
-		$HelpUI.visible = true
+	if has_node("UI/HelpUI"):
+		$UI/HelpUI.visible = true
 	
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
@@ -74,25 +74,25 @@ func remove_player(id: int):
 func _input(event):
 	# Tactical Map (TAB)
 	if event.is_action_pressed("tactical_map"):
-		$TacticalMap.visible = !$TacticalMap.visible
+		$UI/TacticalMap.visible = !$UI/TacticalMap.visible
 		_update_mouse_mode()
 	
 	# Formation Map (Caps Lock)
 	if event.is_action_pressed("formation_map"):
-		$FormationMap.visible = true
+		$UI/FormationMap.visible = true
 		_update_mouse_mode()
 	elif event.is_action_released("formation_map"):
-		$FormationMap.visible = false
+		$UI/FormationMap.visible = false
 		_update_mouse_mode()
 		
 	# Help UI (H) 
 	if event.is_action_pressed("ui_help") or (event is InputEventKey and event.pressed and event.keycode == KEY_H):
-		if has_node("HelpUI"):
-			$HelpUI.visible = !$HelpUI.visible
+		if has_node("UI/HelpUI"):
+			$UI/HelpUI.visible = !$UI/HelpUI.visible
 
 # Apufunktio hiiren tilan hallintaan, ettei koodia tarvitse toistaa
 func _update_mouse_mode():
-	if $TacticalMap.visible or $FormationMap.visible:
+	if $UI/TacticalMap.visible or $UI/FormationMap.visible:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

@@ -50,16 +50,21 @@ properties/12/path = NodePath("Turret4/Gun:rotation")
 properties/12/spawn = true
 properties/12/replication_mode = 1
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_71o2c"]
+size = Vector3(16, 20, 140)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dg6dm"]
 albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_0enge"]
 material = SubResource("StandardMaterial3D_dg6dm")
-top_radius = 0.2
-bottom_radius = 0.2
-height = 6.0
+top_radius = 1.0
+bottom_radius = 1.0
+height = 15.0
 
 [node name="Destroyer" type="CharacterBody3D" unique_id=523173322]
+collision_layer = 8
+collision_mask = 14
 script = ExtResource("1_71o2c")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=87473862]
@@ -67,175 +72,150 @@ replication_config = SubResource("SceneReplicationConfig_6dt7c")
 
 [node name="blenderhull2" parent="." unique_id=1348920901 instance=ExtResource("1_0knfl")]
 
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2004378200]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+shape = SubResource("BoxShape3D_71o2c")
+
 [node name="TurretManager" type="Node3D" parent="." unique_id=375701129 node_paths=PackedStringArray("guns")]
 script = ExtResource("3_i4px2")
-guns = [NodePath("../Turret1/Gun/Barrel1/Muzzle1"), NodePath("../Turret1/Gun/Barrel2/Muzzle2"), NodePath("../Turret2/Gun/Barrel1/Muzzle1"), NodePath("../Turret2/Gun/Barrel2/Muzzle2"), NodePath("../Turret3/Gun/Barrel1/Muzzle1"), NodePath("../Turret3/Gun/Barrel2/Muzzle2"), NodePath("../Turret4/Gun/Barrel1/Muzzle1"), NodePath("../Turret4/Gun/Barrel2/Muzzle2")]
+guns = [NodePath("../Turret1/Gun/Muzzle1"), NodePath("../Turret1/Gun/Muzzle2"), NodePath("../Turret2/Gun/Muzzle1"), NodePath("../Turret2/Gun/Muzzle2"), NodePath("../Turret3/Gun/Muzzle1"), NodePath("../Turret3/Gun/Muzzle2"), NodePath("../Turret4/Gun/Muzzle1"), NodePath("../Turret4/Gun/Muzzle2")]
 
-[node name="Turret1" parent="." unique_id=331245451 node_paths=PackedStringArray("gun") instance=ExtResource("2_6dt7c")]
+[node name="Turret1" parent="." unique_id=331245451 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, -26)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
 
 [node name="Gun" type="Node3D" parent="Turret1" unique_id=943449069]
-transform = Transform3D(-5, 0, 2.1855695e-07, 0, 5, 0, -4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret1/Gun" unique_id=524379877]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
-
-[node name="Muzzle1" type="Node3D" parent="Turret1/Gun/Barrel1" unique_id=540756800 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.2992334, -2.3841858e-07)
-visible = false
-script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
-
-[node name="MuzzleFlash" parent="Turret1/Gun/Barrel1/Muzzle1" unique_id=947208721 instance=ExtResource("5_0enge")]
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret1/Gun/Barrel1/Muzzle1" unique_id=223866350]
-stream = ExtResource("7_dg6dm")
 
 [node name="Barrel2" type="MeshInstance3D" parent="Turret1/Gun" unique_id=1850295446]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
 
-[node name="Muzzle2" type="Node3D" parent="Turret1/Gun/Barrel2" unique_id=1751013017 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.3355303, -2.3841858e-07)
-visible = false
+[node name="Muzzle1" type="Node3D" parent="Turret1/Gun" unique_id=540756800]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -12)
 script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
-[node name="MuzzleFlash" parent="Turret1/Gun/Barrel2/Muzzle2" unique_id=383594309 instance=ExtResource("5_0enge")]
+[node name="MuzzleFlash" parent="Turret1/Gun/Muzzle1" unique_id=947208721 instance=ExtResource("5_0enge")]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret1/Gun/Barrel2/Muzzle2" unique_id=1034082729]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret1/Gun/Muzzle1" unique_id=223866350]
 stream = ExtResource("7_dg6dm")
 
-[node name="Turret2" parent="." unique_id=553917807 node_paths=PackedStringArray("gun") instance=ExtResource("2_6dt7c")]
+[node name="Muzzle2" type="Node3D" parent="Turret1/Gun" unique_id=1751013017]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -12)
+script = ExtResource("6_dg6dm")
+
+[node name="MuzzleFlash" parent="Turret1/Gun/Muzzle2" unique_id=383594309 instance=ExtResource("5_0enge")]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret1/Gun/Muzzle2" unique_id=1034082729]
+stream = ExtResource("7_dg6dm")
+
+[node name="Turret2" parent="." unique_id=553917807 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, 49.375122)
-visible = false
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
 
 [node name="Gun" type="Node3D" parent="Turret2" unique_id=2006073625]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret2/Gun" unique_id=582663625]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
-
-[node name="Muzzle1" type="Node3D" parent="Turret2/Gun/Barrel1" unique_id=1940650735 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.2992334, -2.3841858e-07)
-visible = false
-script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
-
-[node name="MuzzleFlash" parent="Turret2/Gun/Barrel1/Muzzle1" unique_id=1881082785 instance=ExtResource("5_0enge")]
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret2/Gun/Barrel1/Muzzle1" unique_id=291022143]
-stream = ExtResource("7_dg6dm")
 
 [node name="Barrel2" type="MeshInstance3D" parent="Turret2/Gun" unique_id=702214384]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
 
-[node name="Muzzle2" type="Node3D" parent="Turret2/Gun/Barrel2" unique_id=693724890 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.3355303, -2.3841858e-07)
-visible = false
+[node name="Muzzle1" type="Node3D" parent="Turret2/Gun" unique_id=1940650735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -12)
 script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
-[node name="MuzzleFlash" parent="Turret2/Gun/Barrel2/Muzzle2" unique_id=1253749888 instance=ExtResource("5_0enge")]
+[node name="MuzzleFlash" parent="Turret2/Gun/Muzzle1" unique_id=1881082785 instance=ExtResource("5_0enge")]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret2/Gun/Barrel2/Muzzle2" unique_id=326236815]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret2/Gun/Muzzle1" unique_id=291022143]
 stream = ExtResource("7_dg6dm")
 
-[node name="Turret3" parent="." unique_id=1629175352 node_paths=PackedStringArray("gun") instance=ExtResource("2_6dt7c")]
+[node name="Muzzle2" type="Node3D" parent="Turret2/Gun" unique_id=693724890]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -12)
+script = ExtResource("6_dg6dm")
+
+[node name="MuzzleFlash" parent="Turret2/Gun/Muzzle2" unique_id=1253749888 instance=ExtResource("5_0enge")]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret2/Gun/Muzzle2" unique_id=326236815]
+stream = ExtResource("7_dg6dm")
+
+[node name="Turret3" parent="." unique_id=1629175352 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -54.116)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
 
 [node name="Gun" type="Node3D" parent="Turret3" unique_id=1334708033]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret3/Gun" unique_id=1458352186]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
-
-[node name="Muzzle1" type="Node3D" parent="Turret3/Gun/Barrel1" unique_id=133892458 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.2992334, -2.3841858e-07)
-visible = false
-script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
-
-[node name="MuzzleFlash" parent="Turret3/Gun/Barrel1/Muzzle1" unique_id=1101755982 instance=ExtResource("5_0enge")]
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret3/Gun/Barrel1/Muzzle1" unique_id=272360995]
-stream = ExtResource("7_dg6dm")
 
 [node name="Barrel2" type="MeshInstance3D" parent="Turret3/Gun" unique_id=1815228901]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
 
-[node name="Muzzle2" type="Node3D" parent="Turret3/Gun/Barrel2" unique_id=254403692 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.3355303, -2.3841858e-07)
-visible = false
+[node name="Muzzle1" type="Node3D" parent="Turret3/Gun" unique_id=133892458]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -11.999996)
 script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
-[node name="MuzzleFlash" parent="Turret3/Gun/Barrel2/Muzzle2" unique_id=1535604198 instance=ExtResource("5_0enge")]
+[node name="MuzzleFlash" parent="Turret3/Gun/Muzzle1" unique_id=1101755982 instance=ExtResource("5_0enge")]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret3/Gun/Barrel2/Muzzle2" unique_id=1884952692]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret3/Gun/Muzzle1" unique_id=272360995]
 stream = ExtResource("7_dg6dm")
 
-[node name="Turret4" parent="." unique_id=867427974 node_paths=PackedStringArray("gun") instance=ExtResource("2_6dt7c")]
+[node name="Muzzle2" type="Node3D" parent="Turret3/Gun" unique_id=254403692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -12)
+script = ExtResource("6_dg6dm")
+
+[node name="MuzzleFlash" parent="Turret3/Gun/Muzzle2" unique_id=1535604198 instance=ExtResource("5_0enge")]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret3/Gun/Muzzle2" unique_id=1884952692]
+stream = ExtResource("7_dg6dm")
+
+[node name="Turret4" parent="." unique_id=867427974 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, 68.131)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
+muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
 
 [node name="Gun" type="Node3D" parent="Turret4" unique_id=620379278]
-transform = Transform3D(-5, 0, -2.1855695e-07, 0, 5, 0, 4.371139e-07, 0, -2.5, 0, 3.9, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
 
 [node name="Barrel1" type="MeshInstance3D" parent="Turret4/Gun" unique_id=1855092217]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
-
-[node name="Muzzle1" type="Node3D" parent="Turret4/Gun/Barrel1" unique_id=370993692 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.2992334, -2.3841858e-07)
-visible = false
-script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
-
-[node name="MuzzleFlash" parent="Turret4/Gun/Barrel1/Muzzle1" unique_id=554813697 instance=ExtResource("5_0enge")]
-
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret4/Gun/Barrel1/Muzzle1" unique_id=523046686]
-stream = ExtResource("7_dg6dm")
 
 [node name="Barrel2" type="MeshInstance3D" parent="Turret4/Gun" unique_id=540560855]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -1.5, 0, -3)
 mesh = SubResource("CylinderMesh_0enge")
 
-[node name="Muzzle2" type="Node3D" parent="Turret4/Gun/Barrel2" unique_id=999975898 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
-transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.3355303, -2.3841858e-07)
-visible = false
+[node name="Muzzle1" type="Node3D" parent="Turret4/Gun" unique_id=370993692]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -12)
 script = ExtResource("6_dg6dm")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
-[node name="MuzzleFlash" parent="Turret4/Gun/Barrel2/Muzzle2" unique_id=1458797286 instance=ExtResource("5_0enge")]
+[node name="MuzzleFlash" parent="Turret4/Gun/Muzzle1" unique_id=554813697 instance=ExtResource("5_0enge")]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret4/Gun/Barrel2/Muzzle2" unique_id=1722258955]
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret4/Gun/Muzzle1" unique_id=523046686]
+stream = ExtResource("7_dg6dm")
+
+[node name="Muzzle2" type="Node3D" parent="Turret4/Gun" unique_id=999975898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -12)
+script = ExtResource("6_dg6dm")
+
+[node name="MuzzleFlash" parent="Turret4/Gun/Muzzle2" unique_id=1458797286 instance=ExtResource("5_0enge")]
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="Turret4/Gun/Muzzle2" unique_id=1722258955]
 stream = ExtResource("7_dg6dm")

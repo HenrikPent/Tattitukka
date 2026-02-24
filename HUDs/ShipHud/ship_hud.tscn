@@ -1,0 +1,85 @@
+[gd_scene format=3 uid="uid://burshulicu6nj"]
+
+[ext_resource type="Script" uid="uid://cvsyspymooqtl" path="res://Units/Vehicles/Ships/ship_hud.gd" id="1_ggqw4"]
+[ext_resource type="Texture2D" uid="uid://ce84q30466ff4" path="res://HUDs/ShipHud/triangle-png-42424.png" id="2_yqhyd"]
+
+[node name="ShipHUD" type="Control" unique_id=1897236483]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_ggqw4")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=384611005]
+layout_mode = 0
+offset_right = 54.0
+offset_bottom = 77.0
+color = Color(0.19131765, 0.19762558, 0.17879257, 1)
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1829286059]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 46.0
+offset_right = 58.686737
+offset_bottom = 57.759033
+rotation = -1.5707964
+texture = ExtResource("2_yqhyd")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="TextureRect" type="TextureRect" parent="TextureRect" unique_id=603128667]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 12.563645
+offset_top = -32.0
+offset_right = 26.814028
+offset_bottom = -20.959145
+rotation = 3.1415927
+texture = ExtResource("2_yqhyd")
+expand_mode = 1
+stretch_mode = 4
+
+[node name="Speed" type="VBoxContainer" parent="." unique_id=1194308606]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 27.0
+offset_right = 46.0
+offset_bottom = 233.0
+
+[node name="FullAhead" type="Label" parent="Speed" unique_id=76603768]
+layout_mode = 2
+text = "Full"
+horizontal_alignment = 1
+
+[node name="3_4Ahead" type="Label" parent="Speed" unique_id=129068262]
+layout_mode = 2
+text = "3/4"
+horizontal_alignment = 1
+
+[node name="HalfAhead" type="Label" parent="Speed" unique_id=2127455876]
+layout_mode = 2
+text = "Half"
+horizontal_alignment = 1
+
+[node name="1_4Ahead" type="Label" parent="Speed" unique_id=1952412276]
+layout_mode = 2
+text = "1/4"
+horizontal_alignment = 1
+
+[node name="Stop" type="Label" parent="Speed" unique_id=2001648052]
+layout_mode = 2
+text = "Stop"
+horizontal_alignment = 1
+
+[node name="HalfReverse" type="Label" parent="Speed" unique_id=582754031]
+layout_mode = 2
+text = "Half"
+horizontal_alignment = 1
+
+[node name="FullReverse" type="Label" parent="Speed" unique_id=972876278]
+layout_mode = 2
+text = "Full"
+horizontal_alignment = 1

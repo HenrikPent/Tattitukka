@@ -172,6 +172,9 @@ shader_parameter/uv2_offset = Vector3(0, 0, 0)
 material = SubResource("ShaderMaterial_mlq17")
 size = Vector2(5000, 5000)
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_7mrgk"]
+size = Vector3(5000, 80, 5000)
+
 [node name="Kyyry-meri" type="Node3D" unique_id=2060651302]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=738074860]
@@ -182,9 +185,16 @@ environment = SubResource("Environment_chin5")
 camera_attributes = SubResource("CameraAttributesPractical_8ud2x")
 compositor = SubResource("Compositor_sudar")
 
-[node name="SeaSurface" type="MeshInstance3D" parent="." unique_id=857731762]
+[node name="Water" type="StaticBody3D" parent="." unique_id=769043748]
+collision_mask = 0
+
+[node name="SeaSurface" type="MeshInstance3D" parent="Water" unique_id=857731762]
 lod_bias = 0.001
 mesh = SubResource("PlaneMesh_8ud2x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Water" unique_id=435112168]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -40, 0)
+shape = SubResource("BoxShape3D_7mrgk")
 
 [node name="OceanFloor" type="StaticBody3D" parent="." unique_id=1916192553]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -80, 0)

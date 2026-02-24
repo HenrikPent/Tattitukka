@@ -7,8 +7,10 @@
 [ext_resource type="PackedScene" uid="uid://cjjmnq26xg2ja" path="res://Maps/RandomMap/random_map.tscn" id="3_liyct"]
 [ext_resource type="Script" uid="uid://tsryb821r2g" path="res://Main/unit_spawner.gd" id="5_k3v36"]
 [ext_resource type="PackedScene" uid="uid://bfryck36y1sfo" path="res://GameUI/TacticalMap/tactical_map.tscn" id="6_ib3t1"]
+[ext_resource type="Script" uid="uid://xvecnipce37h" path="res://Main/projectile_manager.gd" id="6_o60nc"]
 [ext_resource type="PackedScene" uid="uid://d2g4ttc31irpv" path="res://GameUI/FormationMap/formation_map.tscn" id="7_f6fdm"]
 [ext_resource type="PackedScene" uid="uid://bbfs4b24lb62r" path="res://GameUI/Help/HelpUI.tscn" id="8_rj11h"]
+[ext_resource type="PackedScene" uid="uid://burshulicu6nj" path="res://HUDs/ShipHud/ship_hud.tscn" id="10_qac2q"]
 
 [node name="Main" type="Node3D" unique_id=950126725]
 script = ExtResource("1_liyct")
@@ -16,18 +18,7 @@ maps = Array[PackedScene]([ExtResource("1_qvhan"), ExtResource("3_liyct")])
 
 [node name="MainMenu" parent="." unique_id=1117705064 instance=ExtResource("3_k3v36")]
 
-[node name="MapRoot" type="Node3D" parent="." unique_id=1603803330]
-
 [node name="MapContainer" type="Node3D" parent="." unique_id=2091894345]
-
-[node name="UnitSpawner" type="Node3D" parent="." unique_id=1060878593]
-script = ExtResource("5_k3v36")
-
-[node name="MultiplayerUnitSpawner" type="MultiplayerSpawner" parent="." unique_id=1069271668]
-_spawnable_scenes = PackedStringArray("uid://bichfw0qowbga", "uid://dr4k330rc7l32", "uid://xotaey12ys12", "uid://dex3uao8ute0e")
-spawn_path = NodePath("../Units")
-
-[node name="Units" type="Node3D" parent="." unique_id=1909297137]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=975880595]
 _spawnable_scenes = PackedStringArray("uid://ckhgm3r31phu1")
@@ -35,16 +26,46 @@ spawn_path = NodePath("../Players")
 
 [node name="Players" type="Node3D" parent="." unique_id=1393768622]
 
-[node name="PauseMenu" parent="." unique_id=337249331 instance=ExtResource("3_eunhr")]
+[node name="MultiplayerUnitSpawner" type="MultiplayerSpawner" parent="." unique_id=1069271668]
+_spawnable_scenes = PackedStringArray("uid://bichfw0qowbga", "uid://dr4k330rc7l32", "uid://xotaey12ys12", "uid://dex3uao8ute0e")
+spawn_path = NodePath("../Units")
+
+[node name="UnitSpawner" type="Node3D" parent="." unique_id=1060878593]
+script = ExtResource("5_k3v36")
+
+[node name="Units" type="Node3D" parent="." unique_id=1909297137]
+
+[node name="ProjectileSpawner" type="MultiplayerSpawner" parent="." unique_id=1722327698]
+_spawnable_scenes = PackedStringArray("uid://brvaptf3xkql1")
+spawn_path = NodePath("../Projectiles")
+
+[node name="ProjectileManager" type="Node3D" parent="." unique_id=1028351673]
+script = ExtResource("6_o60nc")
+
+[node name="Projectiles" type="Node3D" parent="." unique_id=1690610206]
+
+[node name="UI" type="CanvasLayer" parent="." unique_id=849689504]
+
+[node name="PauseMenu" parent="UI" unique_id=337249331 instance=ExtResource("3_eunhr")]
 visible = false
 
-[node name="TacticalMap" parent="." unique_id=246792766 instance=ExtResource("6_ib3t1")]
-visible = false
-
-[node name="FormationMap" parent="." unique_id=678211312 instance=ExtResource("7_f6fdm")]
-visible = false
-
-[node name="HelpUI" parent="." unique_id=2009493521 instance=ExtResource("8_rj11h")]
+[node name="HelpUI" parent="UI" unique_id=2009493521 instance=ExtResource("8_rj11h")]
 visible = false
 offset_top = 8.0
 offset_bottom = 8.0
+
+[node name="FormationMap" parent="UI" unique_id=678211312 instance=ExtResource("7_f6fdm")]
+visible = false
+offset_left = 0.6080017
+offset_right = 0.56799316
+
+[node name="TacticalMap" parent="UI" unique_id=246792766 instance=ExtResource("6_ib3t1")]
+visible = false
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1575048541]
+
+[node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("10_qac2q")]
+offset_left = 12.0
+offset_top = 450.0
+offset_right = -1100.0
+offset_bottom = -13.0

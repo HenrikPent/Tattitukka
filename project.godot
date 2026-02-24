@@ -100,6 +100,14 @@ ui_help={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="Water"
+3d_physics/layer_2="Ground"
+3d_physics/layer_3="Objects(buildings, tress, etc)"
+3d_physics/layer_4="Units"
+3d_physics/layer_5="Projectiles"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

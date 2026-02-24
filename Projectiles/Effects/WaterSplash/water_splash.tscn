@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://8jg1taiuj62w"]
+
+[ext_resource type="Script" uid="uid://bhfybg26cjn5c" path="res://Projectiles/Effects/WaterSplash/water_splash.gd" id="1_ymgsn"]
+
+[sub_resource type="Curve" id="Curve_00sd6"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.5479452, 0.9887641), 0.0, 0.0, 0, 0, Vector2(1, 0.056179762), -0.117174596, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_ub85c"]
+curve = SubResource("Curve_00sd6")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ymgsn"]
+particle_flag_align_y = true
+direction = Vector3(0, 1, 0)
+initial_velocity_min = 18.0
+initial_velocity_max = 28.0
+scale_min = 0.5
+scale_max = 1.5
+scale_curve = SubResource("CurveTexture_ub85c")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xqgmh"]
+albedo_color = Color(0, 0.24705882, 0.972549, 1)
+emission_enabled = true
+emission = Color(0.11858138, 0.11858138, 0.11858138, 1)
+emission_energy_multiplier = 0.98
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1n8xx"]
+material = SubResource("StandardMaterial3D_xqgmh")
+top_radius = 0.2
+bottom_radius = 0.0
+height = 4.0
+
+[node name="WaterSplash" type="Node3D" unique_id=487011355]
+script = ExtResource("1_ymgsn")
+
+[node name="Water" type="GPUParticles3D" parent="." unique_id=538388128]
+emitting = false
+amount = 12
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_ymgsn")
+draw_pass_1 = SubResource("CylinderMesh_1n8xx")
