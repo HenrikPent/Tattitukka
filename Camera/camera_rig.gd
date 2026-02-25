@@ -30,13 +30,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			offset_distance += zoom_speed
 
 func _process(_delta: float) -> void:
-	if controlled_unit == null:
-		controlled_unit = get_parent().controlled_unit
-		if controlled_unit == null: return
+	# 1. Haetaan uusi unitti parentilta vain, jos nykyinen on oikeasti null
+	var parent_unit = get_parent().controlled_unit
+	
+	# Tarkistetaan onko nykyinen controlled_unit kuollut/poistettu
+	if not is_instance_valid(controlled_unit):
+		controlled_unit = null
+	
+	# Jos meillä ei ole unittia, mutta parentilla on uusi tarjolla, otetaan se
+	if controlled_unit == null and is_instance_valid(parent_unit):
+		controlled_unit = parent_unit
+	
+	# JOS UNITTI ON EDELLEEN NULL (esim. laiva upposi eikä uutta valittu), 
+	# PYSÄHDYTÄÄN TÄHÄN. Kamera jää niille sijoilleen missä se oli viimeksi.
+	if not is_instance_valid(controlled_unit):
+		return
 
-	if controlled_unit != last_unit:
-		_on_unit_switched()
-		last_unit = controlled_unit
+	# --- Tästä eteenpäin unitti on varmasti elossa ---
 
 	# 1. Haetaan unitin säädöt (fixed mode, offsetti ja rajoittimet)
 	var is_fixed = controlled_unit.get("cam_mode_fixed") if "cam_mode_fixed" in controlled_unit else false

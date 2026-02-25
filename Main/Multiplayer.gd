@@ -4,6 +4,8 @@ extends Node
 signal player_count_updated(count: int)
 signal connection_lost # Uusi signaali
 
+var last_disconnect_reason = "GENERIC"
+
 const PORT = 42069
 var peer = ENetMultiplayerPeer.new()
 var game_ready := false
@@ -13,6 +15,7 @@ var max_players = 2:
 		max_players = value
 		# Aina kun arvo muuttuu, ajetaan tarkistus
 		check_game_ready()
+
 
 func host_game():
 	peer.create_server(PORT)
@@ -29,14 +32,23 @@ func join_game(ip):
 func _ready():
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
+	# Napataan kiinni kättelyvaiheen epäonnistuminen (esim. IP väärin tai portti kiinni)
+	multiplayer.connection_failed.connect(_on_connection_failed)
 	multiplayer.server_disconnected.connect(_on_server_disconnected)
 
 
 func _on_peer_connected(id):
 	# Tarkistetaan ylittyykö pelaajaraja
+	# Palvelin tarkistaa rajan
 	if all_player_ids.size() >= max_players:
-		print("Peli on täynnä! Potkitaan pelaaja: ", id)
-		multiplayer.multiplayer_peer.disconnect_peer(id)
+		print("Peli on täynnä! Ilmoitetaan pelaajalle: ", id)
+		# Lähetetään tieto VAIIN tälle uudelle pelaajalle ennen potkuja
+		notify_server_full.rpc_id(id)
+		
+		# Pieni viive, jotta RPC-viesti ehtii perille ennen yhteyden katkeamista
+		get_tree().create_timer(0.2).timeout.connect(func():
+			peer.disconnect_peer(id)
+		)
 		return
 	
 	if not all_player_ids.has(id):
@@ -46,16 +58,34 @@ func _on_peer_connected(id):
 	# katotaan onko kaikki joinannu
 	check_game_ready()
 
+@rpc("authority", "reliable")
+func notify_server_full():
+	print("Serveri ilmoitti: Peli on täynnä!")
+	last_disconnect_reason = "SERVER_FULL"
+	# Tässä vaiheessa voimme jo lähettää tiedon UI:lle
+	connection_lost.emit("SERVER_FULL")
+
 func _on_peer_disconnected(id):
 	all_player_ids.erase(id)
 	check_game_ready()
 
+func _on_connection_failed():
+	var error_code = peer.get_last_error()
+	print("YHTEYS EPÄONNISTUI. Virhekoodi: ", error_code)
+	# ENet-virhekoodit auttavat debuggauksessa
+	connection_lost.emit("FAILED")
+
 func _on_server_disconnected():
-	print("Yhteys poikki.")
-	multiplayer.multiplayer_peer = null
-	all_player_ids.clear()
-	all_player_ids.append(1) # Palautetaan host-id varmuuden vuoksi
-	connection_lost.emit() # Ilmoitetaan valikolle
+	# Jos syy on jo asetettu RPC:llä, käytetään sitä, muuten DISCONNECTED
+	var final_reason = last_disconnect_reason if last_disconnect_reason != "GENERIC" else "DISCONNECTED"
+	
+	print("Lopullinen katkaisun syy: ", final_reason)
+	
+	# Nollataan tila seuraavaa kertaa varten
+	last_disconnect_reason = "GENERIC"
+	
+	# Välitetään tieto valikolle
+	connection_lost.emit(final_reason)
 
 
 # TÄMÄ AJETAAN VAIN CLIENTEILLA (koska serveri kutsuu tätä RPC:llä)

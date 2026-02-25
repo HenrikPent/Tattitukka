@@ -28,11 +28,13 @@ func _draw():
 			end_pos = map.world_to_map(unit.follow_target.global_position)
 			line_color = Color.GREEN_YELLOW
 			has_target = true
-		elif unit.get("ai_target_pos") != Vector3.ZERO:
+		# KORJATTU RIVI: Tarkistetaan ettei ole null
+		elif unit.get("ai_target_pos") != null:
 			end_pos = map.world_to_map(unit.ai_target_pos)
 			line_color = Color.GRAY
 			has_target = true
 
 		if has_target:
+			# Piirretään viiva hieman ohuempana (1.0 tai 1.5) jotta se ei peitä ikoneita
 			draw_line(start_pos, end_pos, line_color, 1.5, true)
 			draw_circle(end_pos, 2.0, line_color)

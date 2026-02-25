@@ -6,7 +6,7 @@ extends Control
 
 
 # Määritellään tilat nimillä
-enum MenuState { MAIN, SINGLE, MULTI, HOST, JOIN, FULL }
+enum MenuState { MAIN, SINGLE, MULTI, HOST, JOIN, DISCONNECTED, SERVER_FULL }
 
 var current_state = MenuState.MAIN
 
@@ -32,12 +32,15 @@ var current_state = MenuState.MAIN
 @onready var connect_button: Button = $JoinPanel/ConnectButton
 @onready var joined_count: Label = $HostPanel/JoinedCount
 @onready var spin_box: SpinBox = $HostPanel/SpinBox
-@onready var full_panel: Control = $GameFull
+@onready var disconnected_panel: Control = $Disconnected
 
 
 @onready var singleplayer_panel: Control = $Singleplayer
 @onready var map_selector_2: OptionButton = $Singleplayer/MapSelector2
 
+@onready var disconnected: Control = $Disconnected
+
+@onready var server_full: Control = $ServerFull
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS # Varmista että menu toimii vaikka peli olisi pausella
@@ -53,14 +56,28 @@ func _ready():
 	# Asetetaan alkutilanne (1/X)
 	_on_player_count_changed(Multiplayer.all_player_ids.size())
 	
-	
-	Multiplayer.connection_lost.connect(_on_connection_lost)
+	multiplayer.connection_failed.connect(_on_connection_failed) # multiplayer godotin oma muuttuja
+	Multiplayer.connection_lost.connect(_on_connection_lost) # Multiplayer oma scripti
 
-func _on_connection_lost():
-	# Tuodaan valikko takaisin näkyviin ja palataan pääsivulle
+
+func _on_connection_failed():
+	# Tämä laukeaa, jos kättely epäonnistuu (esim. serveri täynnä)
+	go_to_state(MenuState.SERVER_FULL) 
+	# Huom: SERVER_FULL on uusi tila jonka lisäät enum-listaan
+
+func _on_connection_lost(reason: String = "GENERIC"):
+	# TÄMÄ TULOSTUS KERTOO MITÄ VALIKKO SAA:
+	print("VALIKKO: Vastaanotettiin connection_lost signaali. Syy: ", reason)
+	
 	self.show()
-	go_to_state(MenuState.FULL)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	
+	if reason == "SERVER_FULL":
+		print("VALIKKO: Vaihdetaan tilaan SERVER_FULL")
+		go_to_state(MenuState.SERVER_FULL)
+	else:
+		print("VALIKKO: Vaihdetaan tilaan DISCONNECTED")
+		go_to_state(MenuState.DISCONNECTED)
 
 
 func _on_player_count_changed(new_count: int):
@@ -78,7 +95,7 @@ func go_to_state(new_state):
 	multiplayer_panel.hide()
 	host_panel.hide()
 	join_panel.hide()
-	full_panel.hide()
+	disconnected_panel.hide()
 	
 	current_state = new_state
 	
@@ -89,7 +106,8 @@ func go_to_state(new_state):
 		MenuState.MULTI: multiplayer_panel.show()
 		MenuState.HOST: host_panel.show()
 		MenuState.JOIN: join_panel.show()
-		MenuState.FULL: full_panel.show()
+		MenuState.DISCONNECTED: disconnected_panel.show()
+		MenuState.SERVER_FULL: server_full.show()
 
 func _on_multiplayer_pressed():
 	go_to_state(MenuState.MULTI)
@@ -109,15 +127,19 @@ func _on_spin_box_value_changed(value: float):
 func _on_join_pressed():
 	go_to_state(MenuState.JOIN)
 
-#tää on nappi jolla pääsee "server full" ruudusta pois
-func _on_button_pressed() -> void: 
-	go_to_state(MenuState.MAIN) 
-
 func _on_connect_button_pressed():
 	var target_ip = ip_input.text if ip_input.text != "" else "127.0.0.1"
 	Multiplayer.join_game(target_ip)
 	# Piilotetaan menu, mutta hiiri pidetään vielä vapaana kunnes ladataan
 	self.hide()
+
+func _on_disconnected_button_pressed() -> void:
+	go_to_state(MenuState.MAIN) 
+
+
+func _on_server_full_button_pressed() -> void:
+	go_to_state(MenuState.MAIN) 
+
 
 func _on_start_multi_pressed():
 	if multiplayer.is_server():

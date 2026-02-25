@@ -246,31 +246,33 @@ func _draw():
 	for unit in icon_map.keys():
 		if not is_instance_valid(unit): continue
 		
-		# Piirretään viivoja vain omille yksiköille (tai kaikille, jos haluat debugata)
 		if unit.get("team_id") != my_id: continue
 
 		var start_pos = world_to_map(unit.global_position)
 		var end_pos: Vector2
 		var line_color: Color
+		var has_line := false # Lippu, jolla katsotaan piirretäänkö jotain
 
-		# Tarkistetaan, mitä laiva on tekemässä
+		# 1. SEURANTA (Ensisijainen)
 		if is_instance_valid(unit.get("follow_target")):
-			# SEURAA (Vaaleanvihreä)
 			end_pos = world_to_map(unit.follow_target.global_position)
 			line_color = Color.GREEN_YELLOW
-		elif unit.ai_target_pos != Vector3.ZERO:
-			# LIIKKUU (Harmaa)
+			has_line = true
+			
+		# 2. LIIKKUMINEN (TARKISTETTU RIVI)
+		# Käytetään pelkkää 'unit.ai_target_pos', koska se on tosi vain jos se ei ole null
+		elif unit.get("ai_target_pos") != null:
 			end_pos = world_to_map(unit.ai_target_pos)
 			line_color = Color.GRAY
+			has_line = true
+			
+		# 3. HYÖKKÄÄMINEN
 		elif is_instance_valid(unit.get("attack_target")):
-			# HYÖKKÄÄ (punainen)
 			end_pos = world_to_map(unit.attack_target.global_position)
 			line_color = Color.RED
-		else:
-			continue # Ei kohdetta, ei piirretä viivaa
+			has_line = true
 
-		# Piirretään viiva (alkupiste, loppupiste, väri, paksuus, pehmennys)
-		draw_line(start_pos, end_pos, line_color, 2.0, true)
-		
-		# (Valinnainen) Piirretään pieni pallo viivan päähän kohteeksi
-		draw_circle(end_pos, 3.0, line_color)
+		# Piirretään vain jos joku ehto täyttyi
+		if has_line:
+			draw_line(start_pos, end_pos, line_color, 2.0, true)
+			draw_circle(end_pos, 3.0, line_color)

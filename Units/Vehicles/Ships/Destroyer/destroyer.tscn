@@ -2,6 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://cenv4hdpjxgsp" path="res://Units/Vehicles/Ships/Destroyer/blenderhull2.glb" id="1_0knfl"]
 [ext_resource type="Script" uid="uid://bwxub02ord4wm" path="res://Units/Vehicles/Ships/ShipControl.gd" id="1_71o2c"]
+[ext_resource type="Script" uid="uid://4444remad25y" path="res://Units/Vehicles/Ships/Destroyer/ShipDamageManager.gd" id="2_0fp06"]
 [ext_resource type="PackedScene" uid="uid://bax42thm5dabi" path="res://Units/Vehicles/Ships/Destroyer/destroyer turret.glb" id="2_6dt7c"]
 [ext_resource type="Script" uid="uid://bhl3xo5ar3x3v" path="res://Units/Vehicles/Ships/Destroyer/destroyer_turret.gd" id="3_6dt7c"]
 [ext_resource type="Script" uid="uid://dxh5xvwav752h" path="res://Units/Vehicles/Ships/Destroyer/turret_manager.gd" id="3_i4px2"]
@@ -70,9 +71,16 @@ script = ExtResource("1_71o2c")
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=87473862]
 replication_config = SubResource("SceneReplicationConfig_6dt7c")
 
+[node name="ModuleDamage" type="Node3D" parent="." unique_id=758147372]
+script = ExtResource("2_0fp06")
+
 [node name="blenderhull2" parent="." unique_id=1348920901 instance=ExtResource("1_0knfl")]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2004378200]
+[node name="HitBox" type="Area3D" parent="." unique_id=1816947858]
+collision_layer = 8
+collision_mask = 30
+
+[node name="CollisionShape" type="CollisionShape3D" parent="HitBox" unique_id=2004378200]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 shape = SubResource("BoxShape3D_71o2c")
 

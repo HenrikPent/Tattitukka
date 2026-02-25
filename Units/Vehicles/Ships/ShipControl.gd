@@ -32,15 +32,25 @@ var acceleration := 5.0
 var turn_speed := 0.5
 var current_speed := 0.0
 
+var is_sinking := false
 
 # --- AI-MUUTTUJAT ---
-var ai_target_pos := Vector3.ZERO
+var ai_target_pos = null # Käytetään nullia oletuksena (Variant-tyyppi)
 var follow_target: Node3D = null
 @export var follow_distance := 60.0 # Kuinka kaukana pysytään
 var formation_offset := Vector3.ZERO # Paikka suhteessa johtajaan
 @export var formation_grid_size := 40.0 # Etäisyys "yksiköiden" välillä
 
 func _physics_process(delta: float) -> void:
+	if is_sinking:
+		# Pakotetaan laiva alaspäin
+		global_position.y -= 5.0 * delta
+		
+		# Lisävinkki: Voit lisätä pientä kallistumista (roll), 
+		# jotta uppoaminen näyttää dramaattisemmalta
+		rotation.z += 0.3 * delta 
+		return # Hypätään yli muusta ohjauslogiikasta
+	
 	if is_multiplayer_authority():
 		# Luetaan pelaajan näppäimet AINA (se haistelee keskeytystä)
 		_read_player_input()
@@ -77,36 +87,36 @@ func _read_player_input() -> void:
 			sync_speed_index = clampi(sync_speed_index - 1, 0, 6)
 
 func _run_ai_logic() -> void:
-	# 1. PÄIVITYS: Jos meillä on seurattava kohde, päivitetään maali sen sijainnin mukaan
+	# 1. SEURANTA (Johtajan seuraaminen menee pisteen edelle)
 	if is_instance_valid(follow_target):
-		# OPTIO: Jos johtajamme alkaakin itse seurata jotain uutta, 
-		# me voimme hypätä suoraan uuden johtajan perään
-		if is_instance_valid(follow_target.get("follow_target")):
-			follow_target = follow_target.follow_target
-			return # Päivitetään positio seuraavassa framessa uuden kohteen mukaan
-
-		# Päivitetään kohde johtajan mukaan + huomioidaan johtajan suunta (rotaatio)
-		# Tällöin "vasen puoli" pysyy vasempana, vaikka johtaja kääntyy
 		var rotated_offset = follow_target.global_transform.basis * formation_offset
-		ai_target_pos = follow_target.global_position + rotated_offset
-		sync_speed_index = 4
-	
-	# 2. ETÄISYYSTARKISTUS: Jos ollaan jo perillä kohteessa, pysähdytään ja unohdetaan kohde
-	var dist_to_target = global_position.distance_to(ai_target_pos)
-	if dist_to_target < 25.0: 
-		sync_speed_index = 2 # Asetetaan nollavauhti (speed_levels[2] on 0.0)
-		sync_steering = 0
+		var leader_target_pos = follow_target.global_position + rotated_offset
 		
-		# TÄMÄ LISÄYS:
-		if not is_instance_valid(follow_target):
-			# Jos emme seuraa ketään (eli olimme matkalla vain pisteeseen), nollataan kohde
-			ai_target_pos = Vector3.ZERO
-			
-			
+		# Ohjataan kohti johtajan paikkaa
+		_drive_towards(leader_target_pos)
 		return
 
-	# 3. OHJAUSLOGIIKKA (pidetään ennallaan, se toimi hyvin)
-	var to_target = global_position.direction_to(ai_target_pos)
+	# 2. PISTEESEEN AJAMINEN
+	if ai_target_pos != null:
+		var dist_to_target = global_position.distance_to(ai_target_pos)
+		
+		# Jos ollaan perillä (25m säteellä)
+		if dist_to_target < 25.0:
+			print(name, " saavutti kohteensa ja pysähtyy.")
+			ai_target_pos = null # NOLLAUS: Ei enää kohdetta
+			sync_speed_index = 2 # STOP
+			sync_steering = 0.0
+		else:
+			# Jos matkaa on vielä, ajetaan
+			_drive_towards(ai_target_pos)
+	else:
+		# 3. EI KOHDETTA: Varmistetaan että laiva ei jää kääntymään ikuisesti
+		# Jos haluat että laiva vain rullaa pysähdyksiin, kun kohde poistuu:
+		sync_steering = 0.0
+
+# Apufunktio ohjaamiseen
+func _drive_towards(target: Vector3):
+	var to_target = global_position.direction_to(target)
 	var forward = -global_transform.basis.z
 	var angle_to = forward.signed_angle_to(to_target, Vector3.UP)
 
@@ -114,7 +124,9 @@ func _run_ai_logic() -> void:
 		sync_steering = clamp(angle_to * 2.0, -1.0, 1.0)
 	else:
 		sync_steering = 0.0
-
+	
+	# Asetetaan vauhti (esim. 1/2 ahead matkalla)
+	sync_speed_index = 4
 
 func set_ai_target(pos: Vector3):
 	ai_target_pos = pos
@@ -171,6 +183,12 @@ func _apply_movement(delta: float) -> void:
 	# Liike
 	velocity = -global_transform.basis.z * current_speed
 	move_and_slide() # Käytetään tätä, jotta törmäykset saariin toimivat
+
+func start_sinking():
+	is_sinking = true
+	# Jos käytät fysiikkaa (RigidBody), voit kytkeä collisionit pois, 
+	# jotta laiva menee vesi-colliderin läpi
+	# set_collision_layer_value(1, false)
 
 func set_team(id: int):
 	team_id = id

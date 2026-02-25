@@ -146,6 +146,14 @@ text = "JOIN
 
 "
 
+[node name="BackButton" type="Button" parent="Multiplayer" unique_id=378712855]
+layout_mode = 0
+offset_left = 24.0
+offset_top = -28.0
+offset_right = 98.0
+offset_bottom = 3.0
+text = "GOBACK"
+
 [node name="HostPanel" type="Control" parent="." unique_id=854459179]
 visible = false
 anchors_preset = 0
@@ -225,6 +233,14 @@ offset_bottom = 381.0
 text = "START GAME
 "
 
+[node name="BackButton" type="Button" parent="HostPanel" unique_id=778043197]
+layout_mode = 0
+offset_left = -454.0
+offset_top = -145.0
+offset_right = -380.0
+offset_bottom = -114.0
+text = "GOBACK"
+
 [node name="JoinPanel" type="Control" parent="." unique_id=221161634]
 visible = false
 anchors_preset = 0
@@ -263,6 +279,14 @@ offset_top = 168.0
 offset_right = 194.0
 offset_bottom = 199.0
 text = "CONNECT"
+
+[node name="BackButton" type="Button" parent="JoinPanel" unique_id=1734481657]
+layout_mode = 0
+offset_left = -455.0
+offset_top = -145.0
+offset_right = -381.0
+offset_bottom = -114.0
+text = "GOBACK"
 
 [node name="Singleplayer" type="Control" parent="." unique_id=1090359577]
 visible = false
@@ -312,7 +336,15 @@ offset_bottom = 51.0
 text = "START GAME
 "
 
-[node name="GameFull" type="Control" parent="." unique_id=1570729789]
+[node name="BackButton" type="Button" parent="Singleplayer" unique_id=1556738060]
+layout_mode = 0
+offset_left = -454.0
+offset_top = -200.0
+offset_right = -380.0
+offset_bottom = -169.0
+text = "GOBACK"
+
+[node name="Disconnected" type="Control" parent="." unique_id=1570729789]
 visible = false
 anchors_preset = 0
 offset_left = 353.0
@@ -320,17 +352,17 @@ offset_top = 199.0
 offset_right = 818.0
 offset_bottom = 419.0
 
-[node name="Label" type="Label" parent="GameFull" unique_id=2101170613]
+[node name="Label" type="Label" parent="Disconnected" unique_id=2101170613]
 layout_mode = 0
-offset_left = 114.0
-offset_top = 28.0
-offset_right = 343.0
-offset_bottom = 79.0
-text = "SERVER FULL"
+offset_left = 16.0
+offset_top = 32.0
+offset_right = 440.0
+offset_bottom = 83.0
+text = "SERVER DISCONNECTED"
 label_settings = SubResource("LabelSettings_l00uc")
 horizontal_alignment = 1
 
-[node name="Button" type="Button" parent="GameFull" unique_id=442141372]
+[node name="DisconnectedButton" type="Button" parent="Disconnected" unique_id=442141372]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = -0.275
@@ -341,12 +373,34 @@ offset_right = 289.0
 offset_bottom = 202.5
 text = "BACK TO MENU"
 
-[node name="BackButton" type="Button" parent="." unique_id=378712855]
+[node name="ServerFull" type="Control" parent="." unique_id=1691813150]
+visible = false
+anchors_preset = 0
+offset_left = 353.0
+offset_top = 199.0
+offset_right = 818.0
+offset_bottom = 419.0
+
+[node name="Label" type="Label" parent="ServerFull" unique_id=118831669]
 layout_mode = 0
-offset_left = 24.0
-offset_right = 98.0
-offset_bottom = 31.0
-text = "GOBACK"
+offset_left = 16.0
+offset_top = 32.0
+offset_right = 440.0
+offset_bottom = 83.0
+text = "SERVER FULL"
+label_settings = SubResource("LabelSettings_l00uc")
+horizontal_alignment = 1
+
+[node name="ServerFullButton" type="Button" parent="ServerFull" unique_id=976159404]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.275
+anchor_bottom = -0.275
+offset_left = 161.0
+offset_top = 171.5
+offset_right = 289.0
+offset_bottom = 202.5
+text = "BACK TO MENU"
 
 [connection signal="pressed" from="Main/Multiplayer" to="." method="_on_multiplayer_pressed"]
 [connection signal="pressed" from="Main/Singleplayer" to="." method="_on_singleplayer_pressed"]
@@ -354,9 +408,13 @@ text = "GOBACK"
 [connection signal="pressed" from="Main/TESTING/RandomMappi" to="." method="_on_random_mappi_pressed"]
 [connection signal="pressed" from="Multiplayer/Host" to="." method="_on_host_pressed"]
 [connection signal="pressed" from="Multiplayer/Join" to="." method="_on_join_pressed"]
+[connection signal="pressed" from="Multiplayer/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="value_changed" from="HostPanel/SpinBox" to="." method="_on_spin_box_value_changed"]
 [connection signal="pressed" from="HostPanel/StartMulti" to="." method="_on_start_multi_pressed"]
+[connection signal="pressed" from="HostPanel/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="JoinPanel/ConnectButton" to="." method="_on_connect_button_pressed"]
+[connection signal="pressed" from="JoinPanel/BackButton" to="." method="_on_back_button_pressed"]
 [connection signal="pressed" from="Singleplayer/StartSingle" to="." method="_on_start_single_pressed"]
-[connection signal="pressed" from="GameFull/Button" to="." method="_on_button_pressed"]
-[connection signal="pressed" from="BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Singleplayer/BackButton" to="." method="_on_back_button_pressed"]
+[connection signal="pressed" from="Disconnected/DisconnectedButton" to="." method="_on_disconnected_button_pressed"]
+[connection signal="pressed" from="ServerFull/ServerFullButton" to="." method="_on_server_full_button_pressed"]
