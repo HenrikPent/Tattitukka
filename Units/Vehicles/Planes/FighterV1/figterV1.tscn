@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://dpl83ijhk51jc" path="res://Units/Vehicles/Planes/FighterV1/figter_v_1_controls.gd" id="1_i7mby"]
 [ext_resource type="PackedScene" uid="uid://cdso8vcldx6e" path="res://Units/Vehicles/Planes/FighterV1/FighterV1_proto.glb" id="2_i7mby"]
 [ext_resource type="Script" uid="uid://2s8fr0xybxc4" path="res://Units/Vehicles/Planes/FighterV1/FighterPropeller.gd" id="3_htp35"]
+[ext_resource type="PackedScene" uid="uid://bf67wslmstlfe" path="res://HUDs/PlaneHUD/plane_hud.tscn" id="4_lsgye"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qq0nq"]
 properties/0/path = NodePath(".:sync_thrust")
@@ -17,6 +18,9 @@ properties/2/replication_mode = 1
 properties/3/path = NodePath(".:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
+properties/4/path = NodePath(".:team_id")
+properties/4/spawn = true
+properties/4/replication_mode = 1
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_htp35"]
 albedo_color = Color(0.14767182, 0.14767179, 0.14767179, 1)
@@ -31,6 +35,8 @@ height = 20.395731
 
 [node name="FigterV1" type="CharacterBody3D" unique_id=1926567412]
 transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, 0, 0, 0)
+collision_layer = 8
+collision_mask = 31
 script = ExtResource("1_i7mby")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=169410675]
@@ -57,3 +63,7 @@ script = ExtResource("3_htp35")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1443363817]
 transform = Transform3D(0.5, 0, 0, 0, -2.1855694e-08, -0.5, 0, 0.5, -2.1855694e-08, -7.1054274e-15, 2.9095961e-08, -0.66563797)
 shape = SubResource("CapsuleShape3D_qq0nq")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=677608745]
+
+[node name="PlaneHUD" parent="HUD" unique_id=648420183 instance=ExtResource("4_lsgye")]

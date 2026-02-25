@@ -1,3 +1,4 @@
+#Projectile manager
 extends Node
 
 @export var scenes : Dictionary = {
@@ -14,7 +15,7 @@ extends Node
 @rpc("any_peer", "call_local", "reliable")
 func request_fire(type: String, spawn_pos: Vector3, spawn_dir: Vector3, shooter_id: int, speed: float):
 	# Vain palvelin spawnaa objektin, MultiplayerSpawner hoitaa loput
-	if not is_multiplayer_authority(): return
+	if not multiplayer.is_server(): return
 	
 	if not scenes.has(type): return
 	

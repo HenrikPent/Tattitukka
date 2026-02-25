@@ -47,27 +47,25 @@ func spawn_starting_units(player_ids: Array):
 
 
 func spawn_unit(type: String, team: int, pos: Vector3, nime: String, rot: Vector3 = Vector3.ZERO):
-	if not multiplayer.is_server(): return null # Vain serveri saa spawnata
+	if not multiplayer.is_server(): return null
 	
 	var unit = scenes[type].instantiate()
-	
-	# 1. NIMI: Tämän on oltava SAMA kaikilla, jotta synkronointi toimii.
 	unit.name = nime 
 	
-	# 2. LISÄYS: Lisätään puuhun ENNEN kuin asetetaan position
-	# (Tämä triggeröi MultiplayerSpawnerin lähettämään paketin klienteille)
+	# --- ASETETAAN TIIMI ENNEN PUUHUN LISÄYSTÄ ---
+	if unit.has_method("set_team"):
+		unit.set_team(team)
+	# Jos team_id on export-muuttuja:
+	unit.team_id = team 
+	
+	# Nyt kun lisäät lapsen, MultiplayerSpawner lähettää alkutilanteen (spawn data),
+	# jossa oikea team_id on jo mukana.
 	var units_node = get_node("/root/Main/Units")
 	units_node.add_child(unit, true)
 	
-	# 3. TRANSFORMAATIO: Asetetaan vasta kun unitti on "sisällä"
+	# Transformit voi asettaa tässä, ne synkronoituvat MultiplayerSynchronizerilla perässä
 	unit.global_position = pos
 	unit.global_rotation = rot
-	
-	# 4. DATA: Authority ja tiimi
-	if unit.has_method("set_team"):
-		unit.set_team(team)
-	
-	# Oletuksena authority on palvelin (AI)
 	unit.set_multiplayer_authority(1)
 	
 	return unit

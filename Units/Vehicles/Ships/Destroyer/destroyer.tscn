@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://bwxub02ord4wm" path="res://Units/Vehicles/Ships/ShipControl.gd" id="1_71o2c"]
 [ext_resource type="Script" uid="uid://4444remad25y" path="res://Units/Vehicles/Ships/Destroyer/ShipDamageManager.gd" id="2_0fp06"]
 [ext_resource type="PackedScene" uid="uid://bax42thm5dabi" path="res://Units/Vehicles/Ships/Destroyer/destroyer turret.glb" id="2_6dt7c"]
+[ext_resource type="PackedScene" uid="uid://burshulicu6nj" path="res://HUDs/ShipHud/ship_hud.tscn" id="2_d2w44"]
 [ext_resource type="Script" uid="uid://bhl3xo5ar3x3v" path="res://Units/Vehicles/Ships/Destroyer/destroyer_turret.gd" id="3_6dt7c"]
 [ext_resource type="Script" uid="uid://dxh5xvwav752h" path="res://Units/Vehicles/Ships/Destroyer/turret_manager.gd" id="3_i4px2"]
 [ext_resource type="PackedScene" uid="uid://cseul83jry2lf" path="res://Units/Vehicles/Ships/Destroyer/muzzle_flash.tscn" id="5_0enge"]
@@ -50,6 +51,9 @@ properties/11/replication_mode = 1
 properties/12/path = NodePath("Turret4/Gun:rotation")
 properties/12/spawn = true
 properties/12/replication_mode = 1
+properties/13/path = NodePath(".:team_id")
+properties/13/spawn = true
+properties/13/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_71o2c"]
 size = Vector3(16, 20, 140)
@@ -65,11 +69,19 @@ height = 15.0
 
 [node name="Destroyer" type="CharacterBody3D" unique_id=523173322]
 collision_layer = 8
-collision_mask = 14
+collision_mask = 30
 script = ExtResource("1_71o2c")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=87473862]
 replication_config = SubResource("SceneReplicationConfig_6dt7c")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=88241044]
+
+[node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("2_d2w44")]
+offset_left = 12.0
+offset_top = 450.0
+offset_right = -1100.0
+offset_bottom = -13.0
 
 [node name="ModuleDamage" type="Node3D" parent="." unique_id=758147372]
 script = ExtResource("2_0fp06")

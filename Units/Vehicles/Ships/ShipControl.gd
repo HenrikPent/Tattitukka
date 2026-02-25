@@ -9,6 +9,7 @@ extends CharacterBody3D # Käytetään CharacterBodya, se on vakaampi multiplaye
 @export var cam_max_dist := 150.0
 @export_group("") # Tämä tyhjä merkkijono "sulkee" edellisen ryhmän
 
+@onready var hud: Control = $HUD/ShipHUD
 
 # --- SYNC-MUUTTUJAT ---
 # Nämä muuttujat lisätään MultiplayerSynchronizeriin
@@ -41,6 +42,11 @@ var follow_target: Node3D = null
 var formation_offset := Vector3.ZERO # Paikka suhteessa johtajaan
 @export var formation_grid_size := 40.0 # Etäisyys "yksiköiden" välillä
 
+
+func _ready():
+	if hud:
+		hud.visible = false
+
 func _physics_process(delta: float) -> void:
 	if is_sinking:
 		# Pakotetaan laiva alaspäin
@@ -60,6 +66,10 @@ func _physics_process(delta: float) -> void:
 			_run_ai_logic()
 		
 		_apply_movement(delta)
+
+func set_hud_active(active: bool):
+	if hud:
+		hud.visible = active
 
 func _read_player_input() -> void:
 	# --- TÄMÄ ON TÄRKEIN LISÄYS ---

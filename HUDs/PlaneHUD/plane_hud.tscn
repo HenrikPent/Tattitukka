@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://bf67wslmstlfe"]
+
+[ext_resource type="Script" uid="uid://4vyl5fxtgoje" path="res://HUDs/PlaneHUD/plane_hud.gd" id="1_7gh2t"]
+
+[node name="PlaneHUD" type="Control" unique_id=648420183]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_7gh2t")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=196662348]
+layout_mode = 0
+offset_top = 566.0
+offset_right = 62.0
+offset_bottom = 649.0
+color = Color(0.19131765, 0.19762558, 0.17879257, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="." unique_id=994281045]
+layout_mode = 0
+offset_top = 543.0
+offset_right = 62.0
+offset_bottom = 566.0
+color = Color(0.31583053, 0.3214955, 0.29886618, 1)
+
+[node name="ThrustBar" type="VSlider" parent="." unique_id=1192352732]
+layout_mode = 0
+offset_top = 572.0
+offset_right = 62.0
+offset_bottom = 649.0
+min_value = 100.0
+max_value = 600.0
+value = 100.0
+editable = false
+scrollable = false
+
+[node name="ThrustLabel" type="Label" parent="." unique_id=1395785374]
+layout_mode = 0
+offset_top = 543.0
+offset_right = 62.0
+offset_bottom = 566.0
+horizontal_alignment = 1

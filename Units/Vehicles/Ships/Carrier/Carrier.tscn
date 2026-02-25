@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bwxub02ord4wm" path="res://Units/Vehicles/Ships/ShipControl.gd" id="1_useov"]
 [ext_resource type="Script" uid="uid://b5n3n7kvpxqub" path="res://Units/Vehicles/Ships/Carrier/plane_spawner.gd" id="2_11jt6"]
+[ext_resource type="PackedScene" uid="uid://burshulicu6nj" path="res://HUDs/ShipHud/ship_hud.tscn" id="3_ag4s0"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hqgen"]
 properties/0/path = NodePath(".:sync_steering")
@@ -19,6 +20,9 @@ properties/3/replication_mode = 1
 properties/4/path = NodePath(".:rotation")
 properties/4/spawn = true
 properties/4/replication_mode = 1
+properties/5/path = NodePath(".:team_id")
+properties/5/spawn = true
+properties/5/replication_mode = 1
 
 [sub_resource type="BoxMesh" id="BoxMesh_hqgen"]
 size = Vector3(60, 35, 260)
@@ -60,3 +64,11 @@ mesh = SubResource("CylinderMesh_7jkp2")
 [node name="MeshInstance3D" type="MeshInstance3D" parent="MeshInstance3D/MeshInstance3D2" unique_id=649061901]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2.5, 0)
 mesh = SubResource("BoxMesh_nvdkt")
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1486320551]
+
+[node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("3_ag4s0")]
+offset_left = 12.0
+offset_top = 450.0
+offset_right = -1100.0
+offset_bottom = -13.0

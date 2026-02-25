@@ -1,5 +1,8 @@
 extends CharacterBody3D
 
+@onready var hud: Control = $HUD/PlaneHUD
+
+
 @export_group("Stats")
 @export var team_id: int = 0
 @export var health: int = 200
@@ -30,6 +33,10 @@ var follow_target: Node3D = null   # Tämänkin lisääminen on hyvä idea myöh
 
 var gravity: float = 9.81
 
+func _ready():
+	if hud:
+		hud.visible = false
+		
 func _physics_process(delta: float) -> void:
 	if is_multiplayer_authority():
 		if is_player_controlled:
@@ -38,6 +45,10 @@ func _physics_process(delta: float) -> void:
 			_run_ai_logic(delta)
 		
 		move_and_slide()
+
+func set_hud_active(active: bool):
+	if hud:
+		hud.visible = active
 
 func _handle_movement(delta: float) -> void:
 	# 1. Työntövoima

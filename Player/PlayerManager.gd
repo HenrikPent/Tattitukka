@@ -49,7 +49,13 @@ func _perform_switch(player_id: int, new_unit: Node3D):
 func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	var unit = get_node_or_null(u_path)
 	
-	# --- TURVALLINEN SIIVOUS ---
+	# --- HUDIN SAMMUTUS (Vanha unitti) ---
+	# Jos vaihdat yksikköä, sammutetaan nykyinen HUD
+	if p_id == multiplayer.get_unique_id() or p_id == 0:
+		if is_instance_valid(controlled_unit):
+			controlled_unit.set_hud_active(false)
+	
+	# --- UNIT LISTAN SIIVOUS ---
 	var dead_ids = []
 	for key in controlled_units.keys():
 		if not is_instance_valid(controlled_units[key]):
@@ -60,30 +66,34 @@ func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	
 	if p_id == 0:
 		# Yksikkö vapautui AI:lle
-		unit.set_multiplayer_authority(1) # AI on aina palvelimen (1) alla
-		unit.is_player_controlled = false
-		# Poistetaan vanha kytkös listasta jos sellainen oli
-		for key in controlled_units.keys():
-			if controlled_units[key] == unit:
-				controlled_units.erase(key)
+		if is_instance_valid(unit):
+			unit.set_multiplayer_authority(1)
+			unit.is_player_controlled = false
+			unit.set_hud_active(false) # Varmistetaan että HUD sammuu AI:lla
+			
+			for key in controlled_units.keys():
+				if controlled_units[key] == unit:
+					controlled_units.erase(key)
 	else:
+		if not is_instance_valid(unit): return
+		
 		# Yksikkö meni pelaajalle
 		controlled_units[p_id] = unit
 		unit.set_multiplayer_authority(p_id)
 		
-		# Jos minä olen se, joka sai tämän yksikön
 		if p_id == multiplayer.get_unique_id():
 			controlled_unit = unit
 			unit.is_player_controlled = true
+			# --- HUDIN KÄYNNISTYS ---
+			unit.set_hud_active(true)
 		else:
-			# Jos joku muu sai tämän yksikön, se ei ole minun AI:ni eikä pelaajani
-			unit.is_player_controlled = true 
-			# (Tämä pidetään true:na, jotta _physics_process ei aja AI-logiikkaa muilla kuin authoritylla)
+			unit.is_player_controlled = true
+			# Muiden pelaajien yksiköillä HUD pysyy kiinni
+			unit.set_hud_active(false)
+
 
 # --- NÄPPÄIMET 1 JA 2 ---
 func _unhandled_input(event: InputEvent):
-	# Vain authority (paikallinen pelaaja) saa lähettää näppäinkomentoja
-	if not is_multiplayer_authority(): return
 	
 	if event.is_action_pressed("unit_next"):
 		_cycle_units(1)

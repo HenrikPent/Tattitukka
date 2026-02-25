@@ -20,7 +20,7 @@ func action_fire(shooter_id: int):
 	
 	var manager = get_node_or_null("/root/Main/ProjectileManager")
 	if manager:
-		manager.request_fire.rpc(projectile_type, pos, dir, shooter_id, speed)
+		manager.request_fire.rpc_id(1, projectile_type, pos, dir, shooter_id, speed)
 		
 		# Kutsutaan ääniefektiä kaikille (myös itselle)
 		play_fire_effects.rpc()
