@@ -3,7 +3,7 @@ extends CharacterBody3D # Käytetään CharacterBodya, se on vakaampi multiplaye
 
 #auktoriteetin vaihtoa varten
 var authority_cooldown := 0.0
-var _last_authority := 1
+
 
 
 @export_group("Camera Settings")

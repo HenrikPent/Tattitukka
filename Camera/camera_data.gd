@@ -2,11 +2,18 @@ extends Node
 
 var hit_position: Vector3 = Vector3.ZERO
 var hit_node: Node3D = null # TÄMÄ LISÄTTY: kertoo mitä hiiri osoittaa
-
+var camera: Camera3D = null
 func _process(_delta):
-	var camera = get_viewport().get_camera_3d()
-	if not camera: return
-	
+	# Jos kameraa ei ole vielä löydetty tai se on poistettu (esim. pelaaja kuoli)
+	if not is_instance_valid(camera):
+		var my_id = multiplayer.get_unique_id()
+		var camera_path = "/root/Main/Players/" + str(my_id) + "/CameraRig/Camera3D"
+		camera = get_node_or_null(camera_path)
+		
+		# Jos kameraa ei vieläkään löytynyt, ei jatketa
+		if not camera:
+			return
+
 	var mouse_pos = get_viewport().get_mouse_position()
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_direction = camera.project_ray_normal(mouse_pos)

@@ -2,8 +2,12 @@
 
 [ext_resource type="PackedScene" uid="uid://cq4x6eytokmbb" path="res://Camera/camera_rig.tscn" id="1_oul6g"]
 [ext_resource type="Script" uid="uid://bb4apthkhlso0" path="res://Player/player.gd" id="1_q3lat"]
+[ext_resource type="Script" uid="uid://cngm3us5laqqj" path="res://Camera/camera_data.gd" id="3_tok1r"]
 
 [node name="Player" type="Node3D" unique_id=1228966930]
 script = ExtResource("1_q3lat")
 
 [node name="CameraRig" parent="." unique_id=618704710 instance=ExtResource("1_oul6g")]
+
+[node name="CameraData" type="Node3D" parent="." unique_id=728057603]
+script = ExtResource("3_tok1r")

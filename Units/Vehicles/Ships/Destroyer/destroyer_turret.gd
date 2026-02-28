@@ -1,6 +1,7 @@
 #Turret
 extends Node3D
 
+
 @export var gun: Node3D
 @export var muzzles: Array[Node3D] = []
 
@@ -70,7 +71,7 @@ func _ready():
 			muzzle.projectile_speed = projectile_speed
 
 func _process(delta: float) -> void:
-	if is_multiplayer_authority()  and get_parent() == UnitManager.controlled_unit:
+	if get_parent() == UnitManager.controlled_unit:
 		if not gun: return
 
 		update_target()
@@ -78,7 +79,9 @@ func _process(delta: float) -> void:
 		var final_target_pos: Vector3 = CameraData.hit_position
 		if current_target:
 			final_target_pos = get_predicted_position(current_target)
-
+		#if multiplayer.is_server():
+			#print("Host tähtää pisteeseen: ", final_target_pos)
+		
 		# --- BALLISTINEN PITCH-LASKENTA ---
 		var gun_global = gun.global_transform.origin
 		var diff = final_target_pos - gun_global

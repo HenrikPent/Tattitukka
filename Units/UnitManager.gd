@@ -45,6 +45,8 @@ func _perform_switch(player_id: int, new_unit: Node3D):
 	# Päivitetään lista kaikille
 	if player_id == multiplayer.get_unique_id():
 		_update_controlled_unit_list(player_id, new_unit.get_path())
+	elif player_id < 0: #tätä ei voi tehdä AI pelaajille
+		return
 	else:
 		_update_controlled_unit_list.rpc_id(player_id, player_id, new_unit.get_path())
 
