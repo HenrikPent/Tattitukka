@@ -21,7 +21,7 @@ config/icon="res://icon.svg"
 CameraData="*uid://cngm3us5laqqj"
 Multiplayer="*uid://03ge5k2lf23w"
 UnitSpawner="*uid://tsryb821r2g"
-PlayerManager="*uid://jj5x15rf0n5a"
+UnitManager="*uid://jj5x15rf0n5a"
 
 [dotnet]
 

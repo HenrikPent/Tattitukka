@@ -1,4 +1,4 @@
-#player manager
+#unitManager
 extends Node
 
 # Kirjanpito: { pelaaja_id: laiva_node }
@@ -27,6 +27,7 @@ func request_possession(unit_path: NodePath):
 func _perform_switch(player_id: int, new_unit: Node3D):
 	if not multiplayer.is_server(): return
 
+
 	# --- VANHAN YKSIKÖN VAPAUTUS ---
 	if controlled_units.has(player_id):
 		var old_unit = controlled_units[player_id]
@@ -42,10 +43,13 @@ func _perform_switch(player_id: int, new_unit: Node3D):
 	new_unit.is_player_controlled = true
 	
 	# Päivitetään lista kaikille
-	_update_controlled_unit_list.rpc(player_id, new_unit.get_path())
+	if player_id == multiplayer.get_unique_id():
+		_update_controlled_unit_list(player_id, new_unit.get_path())
+	else:
+		_update_controlled_unit_list.rpc_id(player_id, player_id, new_unit.get_path())
 
 # 3. SYNKRONOINTI: Päivitetään tieto kaikille klienteille
-@rpc("authority", "call_local", "reliable")
+@rpc("authority", "reliable")
 func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	var unit = get_node_or_null(u_path)
 	

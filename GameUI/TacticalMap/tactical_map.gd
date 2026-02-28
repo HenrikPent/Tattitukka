@@ -148,7 +148,7 @@ func _handle_left_click(click_pos: Vector2):
 		_highlight_selected_icon()
 		
 		# Pyydetään palvelinta vaihtamaan pelaajan hallitsema yksikkö tähän klikattuun
-		PlayerManager.request_possession.rpc_id(1, selected_unit.get_path())
+		UnitManager.request_possession.rpc_id(1, selected_unit.get_path())
 	
 	else:
 		print("Klikattu tyhjää pisteessä: ", click_pos)

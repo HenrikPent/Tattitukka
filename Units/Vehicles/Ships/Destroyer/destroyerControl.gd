@@ -1,3 +1,14 @@
+"""
+
+|----------------------------------------------------------------------------------------------------------------------------|
+| Vanha scripti, nykyään kaikenlaisilla laivoilla yhteinen shipcontrol, joka hoitaa yleiset jutut kuten ohjauksen ja health, |
+| erikoisominaisuudet kuten lensakreiden spawnaus lentotukialuksella omassa scriptissä, tätä voi myöhemmin käyttää jos   	 |
+| destroyerille tulee jotain erikoisjuttuja.																				 |
+|----------------------------------------------------------------------------------------------------------------------------|
+
+
+
+
 
 #Destroyer.gd
 extends CharacterBody3D # Käytetään CharacterBodya, se on vakaampi multiplayerissä
@@ -136,3 +147,4 @@ func _apply_movement(delta: float) -> void:
 
 func set_team(id: int):
 	team_id = id
+"""

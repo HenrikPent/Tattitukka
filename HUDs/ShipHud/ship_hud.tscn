@@ -1,36 +1,86 @@
 [gd_scene format=3 uid="uid://burshulicu6nj"]
 
-[ext_resource type="Script" uid="uid://cvsyspymooqtl" path="res://Units/Vehicles/Ships/ship_hud.gd" id="1_ggqw4"]
+[ext_resource type="Script" uid="uid://cvsyspymooqtl" path="res://HUDs/ShipHud/ship_hud.gd" id="1_ggqw4"]
 [ext_resource type="Texture2D" uid="uid://ce84q30466ff4" path="res://HUDs/ShipHud/triangle-png-42424.png" id="2_yqhyd"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_yqhyd"]
+font_size = 21
+font_color = Color(0.19215687, 0.19607843, 0.18039216, 1)
 
 [node name="ShipHUD" type="Control" unique_id=1897236483]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 3.0
+offset_top = -4.0
+offset_right = 3.0
+offset_bottom = -4.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("1_ggqw4")
 
-[node name="ColorRect" type="ColorRect" parent="." unique_id=384611005]
+[node name="Crosshair" type="ColorRect" parent="." unique_id=579028856]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 4.0
+offset_bottom = 4.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(4, 4)
+mouse_filter = 2
+color = Color(1, 0, 0, 1)
+
+[node name="Speed" type="Control" parent="." unique_id=187091655]
+anchors_preset = 0
+offset_left = 37.0
+offset_top = 550.0
+offset_right = 77.0
+offset_bottom = 590.0
+
+[node name="ColorRect2" type="ColorRect" parent="Speed" unique_id=1015137458]
+layout_mode = 0
+offset_left = -10.0
+offset_top = -23.0
+offset_right = 64.0
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Speed/ColorRect2" unique_id=2127221817]
+layout_mode = 0
+offset_top = -3.0
+offset_right = 74.0
+offset_bottom = 30.0
+text = "SPEED"
+label_settings = SubResource("LabelSettings_yqhyd")
+horizontal_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="Speed" unique_id=384611005]
 layout_mode = 0
 offset_right = 54.0
 offset_bottom = 77.0
+mouse_filter = 2
 color = Color(0.19131765, 0.19762558, 0.17879257, 1)
 
-[node name="TextureRect" type="TextureRect" parent="." unique_id=1829286059]
+[node name="TextureRect" type="TextureRect" parent="Speed" unique_id=1829286059]
 layout_mode = 0
 offset_left = 43.0
 offset_top = 46.0
 offset_right = 58.686737
 offset_bottom = 57.759033
 rotation = -1.5707964
+mouse_filter = 2
 texture = ExtResource("2_yqhyd")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="TextureRect" type="TextureRect" parent="TextureRect" unique_id=603128667]
+[node name="TextureRect" type="TextureRect" parent="Speed/TextureRect" unique_id=603128667]
 layout_mode = 1
 anchors_preset = -1
 offset_left = 12.563645
@@ -42,44 +92,120 @@ texture = ExtResource("2_yqhyd")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="Speed" type="VBoxContainer" parent="." unique_id=1194308606]
+[node name="VBoxContainer" type="VBoxContainer" parent="Speed" unique_id=1194308606]
 layout_mode = 0
 offset_left = 6.0
 offset_top = 27.0
 offset_right = 46.0
 offset_bottom = 233.0
+mouse_filter = 2
 
-[node name="FullAhead" type="Label" parent="Speed" unique_id=76603768]
+[node name="FullAhead" type="Label" parent="Speed/VBoxContainer" unique_id=76603768]
 layout_mode = 2
 text = "Full"
 horizontal_alignment = 1
 
-[node name="3_4Ahead" type="Label" parent="Speed" unique_id=129068262]
+[node name="3_4Ahead" type="Label" parent="Speed/VBoxContainer" unique_id=129068262]
 layout_mode = 2
 text = "3/4"
 horizontal_alignment = 1
 
-[node name="HalfAhead" type="Label" parent="Speed" unique_id=2127455876]
+[node name="HalfAhead" type="Label" parent="Speed/VBoxContainer" unique_id=2127455876]
 layout_mode = 2
 text = "Half"
 horizontal_alignment = 1
 
-[node name="1_4Ahead" type="Label" parent="Speed" unique_id=1952412276]
+[node name="1_4Ahead" type="Label" parent="Speed/VBoxContainer" unique_id=1952412276]
 layout_mode = 2
 text = "1/4"
 horizontal_alignment = 1
 
-[node name="Stop" type="Label" parent="Speed" unique_id=2001648052]
+[node name="Stop" type="Label" parent="Speed/VBoxContainer" unique_id=2001648052]
 layout_mode = 2
 text = "Stop"
 horizontal_alignment = 1
 
-[node name="HalfReverse" type="Label" parent="Speed" unique_id=582754031]
+[node name="HalfReverse" type="Label" parent="Speed/VBoxContainer" unique_id=582754031]
 layout_mode = 2
 text = "Half"
 horizontal_alignment = 1
 
-[node name="FullReverse" type="Label" parent="Speed" unique_id=972876278]
+[node name="FullReverse" type="Label" parent="Speed/VBoxContainer" unique_id=972876278]
 layout_mode = 2
 text = "Full"
+horizontal_alignment = 1
+
+[node name="Steering" type="Control" parent="." unique_id=1565627971]
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 469.0
+offset_right = 341.0
+offset_bottom = 510.0
+mouse_filter = 2
+
+[node name="ColorRect" type="ColorRect" parent="Steering" unique_id=1736680037]
+layout_mode = 0
+offset_left = -20.0
+offset_top = -1.0
+offset_right = 113.0
+offset_bottom = 39.0
+mouse_filter = 2
+color = Color(0.19131765, 0.19762558, 0.17879257, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="Steering/ColorRect" unique_id=1669768871]
+layout_mode = 0
+offset_left = 10.5
+offset_top = -29.0
+offset_right = 121.5
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="Steering/ColorRect/ColorRect2" unique_id=2135137878]
+layout_mode = 0
+offset_left = 9.0
+offset_right = 107.0
+offset_bottom = 30.0
+text = "STEERING"
+label_settings = SubResource("LabelSettings_yqhyd")
+horizontal_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Steering" unique_id=461713724]
+layout_mode = 0
+offset_left = 22.0
+offset_top = -1.0
+offset_right = 229.0
+offset_bottom = 39.0
+
+[node name="HardPort" type="Label" parent="Steering/HBoxContainer" unique_id=207327456]
+layout_mode = 2
+text = "<<<"
+horizontal_alignment = 1
+
+[node name="HalfPort" type="Label" parent="Steering/HBoxContainer" unique_id=1922662829]
+layout_mode = 2
+text = "  <<"
+horizontal_alignment = 1
+
+[node name="SmallPort" type="Label" parent="Steering/HBoxContainer" unique_id=207293397]
+layout_mode = 2
+text = "  < "
+horizontal_alignment = 1
+
+[node name="Straight" type="Label" parent="Steering/HBoxContainer" unique_id=1003197599]
+layout_mode = 2
+text = "  ⮝  "
+horizontal_alignment = 1
+
+[node name="SmallStbd" type="Label" parent="Steering/HBoxContainer" unique_id=2063943808]
+layout_mode = 2
+text = " >  "
+horizontal_alignment = 1
+
+[node name="HalfStbd" type="Label" parent="Steering/HBoxContainer" unique_id=741884882]
+layout_mode = 2
+text = ">>  "
+horizontal_alignment = 1
+
+[node name="HardStbd" type="Label" parent="Steering/HBoxContainer" unique_id=143914110]
+layout_mode = 2
+text = ">>>"
 horizontal_alignment = 1

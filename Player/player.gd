@@ -17,8 +17,8 @@ func sync_with_manager():
 	
 	while true:
 		# Tarkistetaan onko managerilla jo tieto meidän yksiköstä
-		if PlayerManager.controlled_units.has(my_id):
-			var unit = PlayerManager.controlled_units[my_id]
+		if UnitManager.controlled_units.has(my_id):
+			var unit = UnitManager.controlled_units[my_id]
 			if is_instance_valid(unit):
 				controlled_unit = unit
 				camera_rig.controlled_unit = unit

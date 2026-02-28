@@ -12,48 +12,45 @@
 [ext_resource type="AudioStream" uid="uid://cd8m0a65tmmoq" path="res://Units/Vehicles/Ships/Destroyer/Gun_sound.wav" id="7_dg6dm"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_6dt7c"]
-properties/0/path = NodePath(".:sync_steering")
+properties/0/path = NodePath(".:sync_speed_index")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:sync_speed_index")
+properties/1/path = NodePath(".:position")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath(".:is_player_controlled")
+properties/2/path = NodePath(".:rotation")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath(".:position")
+properties/3/path = NodePath("Turret1:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath(".:rotation")
+properties/4/path = NodePath("Turret1/Gun:rotation")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath("Turret1:rotation")
+properties/5/path = NodePath("Turret2:rotation")
 properties/5/spawn = true
 properties/5/replication_mode = 1
-properties/6/path = NodePath("Turret1/Gun:rotation")
+properties/6/path = NodePath("Turret2/Gun:rotation")
 properties/6/spawn = true
 properties/6/replication_mode = 1
-properties/7/path = NodePath("Turret2:rotation")
+properties/7/path = NodePath("Turret3:rotation")
 properties/7/spawn = true
 properties/7/replication_mode = 1
-properties/8/path = NodePath("Turret2/Gun:rotation")
+properties/8/path = NodePath("Turret3/Gun:rotation")
 properties/8/spawn = true
 properties/8/replication_mode = 1
-properties/9/path = NodePath("Turret3:rotation")
+properties/9/path = NodePath("Turret4:rotation")
 properties/9/spawn = true
 properties/9/replication_mode = 1
-properties/10/path = NodePath("Turret3/Gun:rotation")
+properties/10/path = NodePath("Turret4/Gun:rotation")
 properties/10/spawn = true
 properties/10/replication_mode = 1
-properties/11/path = NodePath("Turret4:rotation")
+properties/11/path = NodePath(".:team_id")
 properties/11/spawn = true
 properties/11/replication_mode = 1
-properties/12/path = NodePath("Turret4/Gun:rotation")
+properties/12/path = NodePath(".:sync_steering_index")
 properties/12/spawn = true
 properties/12/replication_mode = 1
-properties/13/path = NodePath(".:team_id")
-properties/13/spawn = true
-properties/13/replication_mode = 1
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_71o2c"]
 size = Vector3(16, 20, 140)
@@ -69,7 +66,7 @@ height = 15.0
 
 [node name="Destroyer" type="CharacterBody3D" unique_id=523173322]
 collision_layer = 8
-collision_mask = 30
+collision_mask = 8
 script = ExtResource("1_71o2c")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=87473862]
@@ -78,15 +75,15 @@ replication_config = SubResource("SceneReplicationConfig_6dt7c")
 [node name="HUD" type="CanvasLayer" parent="." unique_id=88241044]
 
 [node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("2_d2w44")]
-offset_left = 12.0
-offset_top = 450.0
-offset_right = -1100.0
-offset_bottom = -13.0
 
 [node name="ModuleDamage" type="Node3D" parent="." unique_id=758147372]
 script = ExtResource("2_0fp06")
 
 [node name="blenderhull2" parent="." unique_id=1348920901 instance=ExtResource("1_0knfl")]
+
+[node name="Physics collider" type="CollisionShape3D" parent="." unique_id=616247942]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+shape = SubResource("BoxShape3D_71o2c")
 
 [node name="HitBox" type="Area3D" parent="." unique_id=1816947858]
 collision_layer = 8

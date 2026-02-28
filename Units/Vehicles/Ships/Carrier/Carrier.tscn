@@ -1,28 +1,35 @@
 [gd_scene format=3 uid="uid://xotaey12ys12"]
 
 [ext_resource type="Script" uid="uid://bwxub02ord4wm" path="res://Units/Vehicles/Ships/ShipControl.gd" id="1_useov"]
+[ext_resource type="Script" uid="uid://4444remad25y" path="res://Units/Vehicles/Ships/Destroyer/ShipDamageManager.gd" id="2_11cm4"]
 [ext_resource type="Script" uid="uid://b5n3n7kvpxqub" path="res://Units/Vehicles/Ships/Carrier/plane_spawner.gd" id="2_11jt6"]
 [ext_resource type="PackedScene" uid="uid://burshulicu6nj" path="res://HUDs/ShipHud/ship_hud.tscn" id="3_ag4s0"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hqgen"]
-properties/0/path = NodePath(".:sync_steering")
+properties/0/path = NodePath(".:sync_speed_index")
 properties/0/spawn = true
 properties/0/replication_mode = 1
-properties/1/path = NodePath(".:sync_speed_index")
+properties/1/path = NodePath(".:is_player_controlled")
 properties/1/spawn = true
 properties/1/replication_mode = 1
-properties/2/path = NodePath(".:is_player_controlled")
+properties/2/path = NodePath(".:position")
 properties/2/spawn = true
 properties/2/replication_mode = 1
-properties/3/path = NodePath(".:position")
+properties/3/path = NodePath(".:rotation")
 properties/3/spawn = true
 properties/3/replication_mode = 1
-properties/4/path = NodePath(".:rotation")
+properties/4/path = NodePath(".:team_id")
 properties/4/spawn = true
 properties/4/replication_mode = 1
-properties/5/path = NodePath(".:team_id")
+properties/5/path = NodePath(".:sync_steering_index")
 properties/5/spawn = true
 properties/5/replication_mode = 1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_11cm4"]
+size = Vector3(58, 35, 260)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ag4s0"]
+size = Vector3(58, 35, 260)
 
 [sub_resource type="BoxMesh" id="BoxMesh_hqgen"]
 size = Vector3(60, 35, 260)
@@ -39,7 +46,12 @@ height = 3.0
 size = Vector3(4, 2, 5)
 
 [node name="Carrier" type="CharacterBody3D" unique_id=181965197]
+collision_layer = 8
+collision_mask = 30
 script = ExtResource("1_useov")
+
+[node name="ModuleDamage" type="Node3D" parent="." unique_id=1005916937]
+script = ExtResource("2_11cm4")
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=1404738413]
 replication_config = SubResource("SceneReplicationConfig_hqgen")
@@ -49,6 +61,16 @@ script = ExtResource("2_11jt6")
 
 [node name="SpawnPoint" type="Marker3D" parent="PlaneSpawner" unique_id=1837182357]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 24.12387, 92.67348)
+
+[node name="Physics collider" type="CollisionShape3D" parent="." unique_id=2065194966]
+shape = SubResource("BoxShape3D_11cm4")
+
+[node name="HitBox" type="Area3D" parent="." unique_id=1152739126]
+collision_layer = 8
+collision_mask = 30
+
+[node name="CollisionShape" type="CollisionShape3D" parent="HitBox" unique_id=816257846]
+shape = SubResource("BoxShape3D_ag4s0")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=999578995]
 mesh = SubResource("BoxMesh_hqgen")
@@ -68,7 +90,3 @@ mesh = SubResource("BoxMesh_nvdkt")
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1486320551]
 
 [node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("3_ag4s0")]
-offset_left = 12.0
-offset_top = 450.0
-offset_right = -1100.0
-offset_bottom = -13.0

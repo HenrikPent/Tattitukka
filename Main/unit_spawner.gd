@@ -18,12 +18,12 @@ func spawn_starting_units(player_ids: Array):
 		# Luodaan pelaajalle "paikka" maailmassa (0-4)
 		# Käytetään jakojäännöstä 5:llä ja kerrotaan se 100:lla (väliä 100m)
 		var player_slot = player_ids.find(id) # Tai: id % 5
-		var base_x = player_slot * 1000.0
+		var base_x = player_slot * 400.0
 		
 		# 1. Destroyerit
-		for i in range(6):
+		for i in range(3):
 			var unit_name = "dest_" + str(id) + "_" + str(i)
-			var spawn_pos = Vector3(base_x + 20, 0, i * 200) # Pieni offset carrieriin
+			var spawn_pos = Vector3(base_x + 20, -5, i * 200) # Pieni offset carrieriin
 			var unit = spawn_unit("destroyer", id, spawn_pos, unit_name)
 			
 			if first_unit == null:
@@ -42,7 +42,7 @@ func spawn_starting_units(player_ids: Array):
 		var final_unit = first_unit
 		get_tree().create_timer(1.0).timeout.connect(func():
 			if is_instance_valid(final_unit):
-				PlayerManager._perform_switch(id, final_unit)
+				UnitManager._perform_switch(id, final_unit)
 		)
 
 

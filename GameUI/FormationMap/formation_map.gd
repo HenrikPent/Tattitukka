@@ -11,7 +11,7 @@ var dragging_unit: Node = null
 func _process(_delta):
 	if visible:
 		# 1. Katsotaan, mitä unittia pelaaja ohjaa
-		var active_unit = PlayerManager.controlled_unit
+		var active_unit = UnitManager.controlled_unit
 		
 		if is_instance_valid(active_unit):
 			# 2. Etsitään tämän yksikön johtaja (komentoketjun huippu)
@@ -50,7 +50,7 @@ func _draw():
 	draw_string(ThemeDB.fallback_font, center + Vector2(12, 5), "LEADER", HORIZONTAL_ALIGNMENT_LEFT, -1, 12)
 
 	for u in followers:
-		var is_me = (u == PlayerManager.controlled_unit)
+		var is_me = (u == UnitManager.controlled_unit)
 		var base_color = u.get_icon_color()
 		if is_me: base_color = Color.GREEN # Korostetaan oma laiva
 

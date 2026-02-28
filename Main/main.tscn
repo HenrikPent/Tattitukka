@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cjjmnq26xg2ja" path="res://Maps/RandomMap/random_map.tscn" id="3_liyct"]
 [ext_resource type="Script" uid="uid://tsryb821r2g" path="res://Main/unit_spawner.gd" id="5_k3v36"]
 [ext_resource type="PackedScene" uid="uid://bfryck36y1sfo" path="res://GameUI/TacticalMap/tactical_map.tscn" id="6_ib3t1"]
-[ext_resource type="Script" uid="uid://xvecnipce37h" path="res://Main/projectile_manager.gd" id="6_o60nc"]
+[ext_resource type="Script" uid="uid://xvecnipce37h" path="res://Projectiles/projectile_manager.gd" id="6_o60nc"]
 [ext_resource type="PackedScene" uid="uid://d2g4ttc31irpv" path="res://GameUI/FormationMap/formation_map.tscn" id="7_f6fdm"]
 [ext_resource type="PackedScene" uid="uid://bbfs4b24lb62r" path="res://GameUI/Help/HelpUI.tscn" id="8_rj11h"]
 

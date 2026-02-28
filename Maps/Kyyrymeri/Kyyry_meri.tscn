@@ -24,6 +24,10 @@ sky = SubResource("Sky_4scmb")
 ambient_light_color = Color(0.058901466, 0.5694681, 0.8504404, 1)
 reflected_light_source = 2
 fog_light_color = Color(0.41985047, 0.5556722, 0.7595467, 1)
+fog_aerial_perspective = 0.724
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.005
+volumetric_fog_albedo = Color(0.39027527, 0.5959114, 1, 1)
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_8ud2x"]
 
@@ -131,7 +135,7 @@ void fragment() {
 	//EMISSION += textureLod(screen_texture, mix(SCREEN_UV, ref_ofs, smoothstep(0.0, 1.0, VERTEX.z - refraction_view_pos.z)), ROUGHNESS * 8.0).rgb * ref_amount * EXPOSURE;
 	ALBEDO *= 1.0 - ref_amount;
 	// Force transparency on the material (required for refraction).
-	ALPHA = 1.0;
+	ALPHA = 0.9;
 }
 "
 

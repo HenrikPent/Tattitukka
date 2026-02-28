@@ -1,10 +1,13 @@
+# Muzzle.gd
 extends Node3D
 
-@export var projectile_type: String = "127mm"
-@export var speed: float = 200.0
-@export var fire_rate: float = 0.5
+# Tykki asettaa nämä arvot automaattisesti ennen ammuntaa
+var projectile_type: String = "127mm"
+var projectile_speed: float = 200.0
 
-@onready var sfx: AudioStreamPlayer3D = $AudioStreamPlayer3D # Varmista nimi!
+@export var fire_rate: float = 0.5 # Voit pitää tämän muzzle-kohtaisena (esim. eri määrä putkia)
+
+@onready var sfx: AudioStreamPlayer3D = $AudioStreamPlayer3D
 @onready var flash: Node3D = $MuzzleFlash
 
 var turret_control: Node = null
@@ -20,26 +23,22 @@ func action_fire(shooter_id: int):
 	
 	var manager = get_node_or_null("/root/Main/ProjectileManager")
 	if manager:
-		manager.request_fire.rpc_id(1, projectile_type, pos, dir, shooter_id, speed)
-		
-		# Kutsutaan ääniefektiä kaikille (myös itselle)
+		# HUOM: Käytetään nyt projectile_speediä, jonka tykki on meille kertonut
+		manager.request_fire.rpc_id(1, projectile_type, pos, dir, shooter_id, projectile_speed)
 		play_fire_effects.rpc()
 	
 	await get_tree().create_timer(fire_rate).timeout
 	can_fire = true
 
-# Tämä suoritetaan kaikilla koneilla verkon yli
 @rpc("any_peer", "call_local", "unreliable")
 func play_fire_effects():
-	# 1. ÄÄNI
 	if sfx:
 		sfx.pitch_scale = randf_range(0.95, 1.05)
 		sfx.play()
 	
-	# 2. VÄLÄHDYS
 	if flash:
 		if flash is GPUParticles3D or flash is CPUParticles3D:
-			flash.restart() # Käynnistää efektin alusta
+			flash.restart()
 			flash.emitting = true
 		elif flash.has_method("play"):
-			flash.play() # Jos se on esim. AnimationPlayer tai sprite-animaatio
+			flash.play()
