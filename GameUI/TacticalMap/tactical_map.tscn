@@ -5,9 +5,10 @@
 
 [node name="TacticalMap" type="Control" unique_id=246792766]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 250.0
-offset_right = 850.0
+anchor_left = 0.21700001
+anchor_right = 0.21700001
+offset_left = 0.015991211
+offset_right = 600.016
 offset_bottom = 600.0
 script = ExtResource("1_dj2or")
 
@@ -33,7 +34,7 @@ offset_bottom = 600.0
 mouse_filter = 2
 
 [node name="LineLayer" type="Control" parent="." unique_id=1051179518]
-anchors_preset = 0
+layout_mode = 1
 offset_right = 600.0
 offset_bottom = 600.0
 mouse_filter = 2

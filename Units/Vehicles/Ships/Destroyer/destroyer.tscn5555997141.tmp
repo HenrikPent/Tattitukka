@@ -70,7 +70,7 @@ top_radius = 1.0
 bottom_radius = 1.0
 height = 15.0
 
-[node name="Destroyer" type="CharacterBody3D" unique_id=523173322 groups=["Units"]]
+[node name="Destroyer" type="CharacterBody3D" unique_id=523173322]
 collision_layer = 8
 collision_mask = 8
 script = ExtResource("1_71o2c")

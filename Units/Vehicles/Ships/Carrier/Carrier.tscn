@@ -51,7 +51,7 @@ top_radius = 5.0
 bottom_radius = 0.0
 height = 10.0
 
-[node name="Carrier" type="CharacterBody3D" unique_id=181965197]
+[node name="Carrier" type="CharacterBody3D" unique_id=181965197 groups=["Units"]]
 collision_layer = 8
 collision_mask = 30
 script = ExtResource("1_useov")

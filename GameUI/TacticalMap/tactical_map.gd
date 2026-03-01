@@ -127,7 +127,7 @@ func _gui_input(event):
 
 func _handle_left_click(click_pos: Vector2):
 	var closest_unit = null
-	var min_dist = 30.0 # Kasvatetaan hieman osumisaluetta (30 pikseliä)
+	var min_dist = 15.0 # Kasvatetaan hieman osumisaluetta (30 pikseliä)
 	
 	for unit in icon_map.keys():
 		if unit.get("team_id") == 0: continue
@@ -169,7 +169,7 @@ func _handle_right_click(click_pos: Vector2):
 
 	# 1. Katsotaan osuiko oikea klikkaus johonkin ikoniin
 	var clicked_unit = null
-	var min_dist = 30.0
+	var min_dist = 15
 	
 	for unit in icon_map.keys():
 		if unit.get("team_id") == 0: continue
@@ -186,14 +186,15 @@ func _handle_right_click(click_pos: Vector2):
 		var my_id = multiplayer.get_unique_id()
 		var target_team = clicked_unit.get("team_id")
 		
-		if target_team == my_id or target_team < 0:
+		if target_team == my_id or target_team == 0: #0 tuhouituneilla
 			# YSTÄVÄ -> SEURAA
 			if selected_unit.has_method("set_follow_target"):
 				selected_unit.set_follow_target(clicked_unit)
 				print("KOMENTO: Seuraa liittolaista ", clicked_unit.name)
 		else:
-			# VIHÖLLINEN -> HYÖKKÄÄ (voidaan toteuttaa myöhemmin)
-			print("KOMENTO: Hyökkää vihollisen kimppuun! (Toteuttamatta)")
+			if selected_unit.has_method("set_attack_target"):
+				selected_unit.set_attack_target(clicked_unit)
+				print("KOMENTO: Hyökkää vihollisen ", clicked_unit.name, " kimppuun!")
 	
 	else:
 		# TYHJÄ MERI -> LIIKU JA LOPETA SEURAAMINEN

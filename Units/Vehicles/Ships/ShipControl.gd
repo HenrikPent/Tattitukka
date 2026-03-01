@@ -58,7 +58,7 @@ var is_sinking := false
 # --- AI-MUUTTUJAT ---
 var ai_target_pos = null # Käytetään nullia oletuksena (Variant-tyyppi)
 var follow_target: Node3D = null
-@export var follow_distance := 60.0 # Kuinka kaukana pysytään
+var attack_target: Node3D = null # UUSI: Kohde jota kohti hyökätään
 var formation_offset := Vector3.ZERO # Paikka suhteessa johtajaan
 @export var formation_grid_size := 40.0 # Etäisyys "yksiköiden" välillä
 
@@ -89,7 +89,6 @@ func _on_authority_changed(_new_auth: int): # Lisätty alaviiva (_) varoituksen 
 	var sync = get_node_or_null("MultiplayerSynchronizer")
 	if sync:
 		sync.set_multiplayer_authority(_new_auth)
-	print(name, " hallinta vaihtui -> ", _new_auth)
 
 
 func set_hud_active(active: bool):
@@ -128,7 +127,6 @@ func _read_player_input() -> void:
 			is_player_controlled = true
 			if throttle_up: sync_speed_index = clampi(sync_speed_index + 1, 0, 6)
 			if throttle_down: sync_speed_index = clampi(sync_speed_index - 1, 0, 6)
-			print(name, " Nopeus muutettu: ", sync_speed_index)
 
 	# 2. PERÄSIMEN OHJAUS (Uusi portaittainen logiikka)
 	if steer_input != 0:
@@ -154,42 +152,34 @@ func _change_steering(direction: float):
 		print("!!! VAROITUS: Client yrittää muuttaa ohjausta ilman auktoriteettia!")
 		return
 
-	var old_index = sync_steering_index
 	if direction > 0: # Vasen (A)
 		sync_steering_index = clampi(sync_steering_index - 1, 0, 6)
 	elif direction < 0: # Oikea (D)
 		sync_steering_index = clampi(sync_steering_index + 1, 0, 6)
-	
-	if old_index != sync_steering_index:
-		print(name, " Ohjaus muutettu: ", sync_steering_index, " (Auktoriteetti: ", is_multiplayer_authority(), ")")
 
 
 func _run_ai_logic() -> void:
-	# 1. SEURANTA (Johtajan seuraaminen menee pisteen edelle)
+	# 1. HYÖKKÄYS (Korkein prioriteetti)
+	if is_instance_valid(attack_target):
+		attack_ship()
+
+	# 2. SEURANTA
 	if is_instance_valid(follow_target):
 		var rotated_offset = follow_target.global_transform.basis * formation_offset
 		var leader_target_pos = follow_target.global_position + rotated_offset
-		
-		# Ohjataan kohti johtajan paikkaa
 		_drive_towards(leader_target_pos)
 		return
 
-	# 2. PISTEESEEN AJAMINEN
+	# 3. PISTEESEEN AJAMINEN
 	if ai_target_pos != null:
 		var dist_to_target = global_position.distance_to(ai_target_pos)
-		
-		# Jos ollaan perillä (25m säteellä)
 		if dist_to_target < 25.0:
-			#print(name, " saavutti kohteensa ja pysähtyy.")
-			ai_target_pos = null # NOLLAUS: Ei enää kohdetta
+			ai_target_pos = null
 			sync_speed_index = 2 # STOP
-			sync_steering_index = 3
+			sync_steering_index = 3 # MIDSHIPS
 		else:
-			# Jos matkaa on vielä, ajetaan
 			_drive_towards(ai_target_pos)
 	else:
-		# 3. EI KOHDETTA: Varmistetaan että laiva ei jää kääntymään ikuisesti
-		# Jos haluat että laiva vain rullaa pysähdyksiin, kun kohde poistuu:
 		sync_steering_index = 3
 
 # Apufunktio ohjaamiseen
@@ -209,17 +199,30 @@ func _drive_towards(target: Vector3):
 	sync_speed_index = 4 # 1/2 Ahead
 
 
-@rpc("any_peer", "call_local", "reliable")
 func set_ai_target(pos: Vector3):
 	ai_target_pos = pos
 	follow_target = null
+	attack_target = null
 	# Tämä on tärkeää: Kun uusi kohde asetetaan, laiva siirtyy AI-tilaan
 	is_player_controlled = false 
 	
 	if is_multiplayer_authority():
 		sync_speed_index = 4 # Asetetaan vauhtia
 
+
+func set_attack_target(target: Node3D):
+	attack_target = target
+	follow_target = null
+	ai_target_pos = null
+	is_player_controlled = false
+
+
 func set_follow_target(target: Node3D):
+	
+	# Nollataan muut tilat, jotta uusi käsky menee läpi
+	ai_target_pos = null
+	attack_target = null
+	
 	# 1. Etsitään lopullinen johtaja
 	var final_leader = target
 	var max_depth = 5
@@ -239,12 +242,11 @@ func set_follow_target(target: Node3D):
 	var x_sign = 1 if (n % 2 != 0) else -1
 	
 	# y = n/2 pyöristettynä ylös
-	var y_val = ceil(float(n) / 2.0) # Negatiivinen, koska se on johtajan takana
+	var y_val = 2 * ceil(float(n) / 2.0) # Negatiivinen, koska se on johtajan takana
 	
 	# Asetetaan lopullinen offset metreinä
 	formation_offset = Vector3(x_sign, 0, y_val) * formation_grid_size
-	
-	print(name, " liittyi muodostelmaan paikalle ", n, " offsetilla: ", formation_offset)
+
 
 # Apufunktio seuraajien laskemiseen
 func _get_followers_of(leader: Node3D) -> Array:
@@ -257,31 +259,78 @@ func _get_followers_of(leader: Node3D) -> Array:
 
 
 func _apply_movement(delta: float) -> void:
-	# 1. NOPEUS (Kuten ennenkin)
+	# 1. NOPEUS
 	var target_speed = speed_levels[sync_speed_index]
 	current_speed = move_toward(current_speed, target_speed, acceleration * delta)
 	
-	# 2. PERÄSIMEN SMOOTH LIIKE
-	# Haetaan tavoitekulma valitun indeksin perusteella
+	# 2. PERÄSIMEN LOGIIKKA
 	var target_rudder_pos = steering_levels[sync_steering_index]
 	
-	# Siirretään peräsintä kohti tavoitetta vakionopeudella
-	current_steering_output = move_toward(
-		current_steering_output, 
-		target_rudder_pos, 
-		rudder_speed * delta
-	)
+	if is_player_controlled:
+		# Pelaajalla peräsin liikkuu hitaasti (alkuperäinen logiikka)
+		current_steering_output = move_toward(
+			current_steering_output, 
+			target_rudder_pos, 
+			rudder_speed * delta
+		)
+	else:
+		# AI:lla peräsin hyppää heti tavoitteeseen (ei aaltoilua)
+		current_steering_output = target_rudder_pos
 	
 	# 3. KÄÄNTYMINEN JA LIIKE
 	if abs(current_speed) > 0.1:
-		# Käytetään nyt tasoitettua outputia kääntymiseen
 		var rotation_dir = current_steering_output
+		# Jos peruutetaan, kääntö on käänteinen
 		if current_speed < 0: rotation_dir *= -1
 		rotate_y(rotation_dir * turn_speed * delta)
 	
 	# Liike
 	velocity = -global_transform.basis.z * current_speed
 	move_and_slide()
+
+
+func attack_ship() -> void:
+	if not is_instance_valid(attack_target):
+		return
+	
+	var target_pos = attack_target.global_position
+	var dist = global_position.distance_to(target_pos)
+	var to_target = global_position.direction_to(target_pos)
+	
+	# --- 1. ETÄISYYDEN HALLINTA ---
+	if dist > 700.0:
+		# Liian kaukana -> Aja suoraan kohti
+		_drive_towards(target_pos)
+		sync_speed_index = 6 # Full Ahead
+	
+	elif dist < 450.0:
+		# Liian lähellä -> Käänny poispäin tai peruuta
+		var escape_pos = global_position - to_target * 100.0
+		_drive_towards(escape_pos)
+		sync_speed_index = 3 # Slow
+		
+	else:
+		# --- 2. KYLKI KOHTI (BROADSIDE) ---
+		# Lasketaan tangenttipiste vihollisen ympäriltä
+		# Vector3.UP on normaali, jonka ympäri pyöräytetään 90 astetta
+		var side_direction = to_target.cross(Vector3.UP).normalized()
+		
+		# Valitaan kumpi kylki on jo valmiiksi lähempänä vihollista
+		var forward = -global_transform.basis.z
+		if forward.dot(side_direction) < 0:
+			side_direction = -side_direction
+			
+		# Kohdepiste on tangentin suunnassa
+		var broadside_target = global_position + side_direction * 100.0
+		
+		_drive_towards(broadside_target)
+		
+		# Säädetään nopeutta etäisyyden mukaan optimaalisella alueella
+		if dist > 600.0:
+			sync_speed_index = 4 # 1/2 Ahead
+		else:
+			sync_speed_index = 3 # 1/4 Ahead
+
 
 func start_sinking():
 	if is_sinking: return # Estetään moninkertainen kutsu
