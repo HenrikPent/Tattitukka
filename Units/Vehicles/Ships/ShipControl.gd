@@ -284,7 +284,13 @@ func _apply_movement(delta: float) -> void:
 	move_and_slide()
 
 func start_sinking():
+	if is_sinking: return # Estetään moninkertainen kutsu
 	is_sinking = true
+	# Jos tämä oli pelaajan hallitsema laiva, vapautetaan kamera
+	if UnitManager.controlled_unit == self:
+		UnitManager.controlled_unit = null 
+		# Tässä kohtaa kannattaa piilottaa HUD
+		set_hud_active(false)
 
 
 func set_team(id: int):

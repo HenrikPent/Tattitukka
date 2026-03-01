@@ -70,52 +70,64 @@ func _ready():
 		if "projectile_speed" in muzzle:
 			muzzle.projectile_speed = projectile_speed
 
+
 func _process(delta: float) -> void:
-	if get_parent() == UnitManager.controlled_unit:
-		if not gun: return
-
-		update_target()
+	if get_parent() != UnitManager.controlled_unit:
+		return
 		
-		var final_target_pos: Vector3 = CameraData.hit_position
-		if current_target:
-			final_target_pos = get_predicted_position(current_target)
-		#if multiplayer.is_server():
-			#print("Host tähtää pisteeseen: ", final_target_pos)
+	# 1. TUNNISTA TÄHTÄYSPISTE (Raycast suoraan tässä)
+	var cam = get_viewport().get_camera_3d()
+	if not cam: return
+	
+	var mouse_pos = get_viewport().get_mouse_position()
+	if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		mouse_pos = get_viewport().get_visible_rect().size / 2
 		
-		# --- BALLISTINEN PITCH-LASKENTA ---
-		var gun_global = gun.global_transform.origin
-		var diff = final_target_pos - gun_global
-		
-		var x = Vector2(diff.x, diff.z).length() 
-		var y = diff.y 
-		var v = projectile_speed
-		var g = gravity
+	var ray_origin = cam.project_ray_origin(mouse_pos)
+	var ray_dir = cam.project_ray_normal(mouse_pos)
+	
+	# Ammutaan säde maailmaan
+	var space_state = get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(ray_origin, ray_origin + ray_dir * 2000)
+	query.collision_mask = 4 # Kerros, jossa meri/maa on
+	var result = space_state.intersect_ray(query)
+	
+	var final_target_pos: Vector3
+	if result:
+		final_target_pos = result.position
+	else:
+		# Jos ei osuta mihinkään, tähdätään kauas horisonttiin
+		final_target_pos = ray_origin + (ray_dir * 1000.0)
 
-		var v2 = v * v
-		# Lasketaan diskriminantti
-		var root = v2 * v2 - g * (g * (x * x) + 2 * y * v2)
+	# 2. BALLISTINEN LASKENTA (Käyttäen tätä juuri laskettua pistettä)
+	var diff = final_target_pos - gun.global_transform.origin
+	var x = Vector2(diff.x, diff.z).length()
+	var y = diff.y
+	var v = projectile_speed
+	var g = gravity
+	
+	var v2 = v * v
+	var root = v2 * v2 - g * (g * (x * x) + 2 * y * v2)
 
-		var target_pitch: float
-		if root >= 0:
-			var angle = atan((v2 - sqrt(root)) / (g * x))
-			# Jos aiemmin oli -angle ja se meni väärinpäin, kokeile:
-			target_pitch = angle 
-		else:
-			# Kantama loppuu, tähdätään 45 astetta (tässäkin voi joutua kääntämään etumerkin)
-			target_pitch = deg_to_rad(45.0) 
+	var target_pitch: float
+	if root >= 0:
+		target_pitch = atan((v2 - sqrt(root)) / (g * x))
+	else:
+		target_pitch = deg_to_rad(45.0) # Maksimikantama
 
-		
-		var pitch_diff = target_pitch - gun.rotation.x
-		gun.rotation.x += clamp(pitch_diff, -deg_to_rad(pitch_speed * delta), deg_to_rad(pitch_speed * delta))
-		
-		# --- YAW (Vasen/Oikea) ---
-		var desired_yaw = atan2(-diff.x, -diff.z)
-		var yaw_diff = wrapf(desired_yaw - global_rotation.y, -PI, PI)
-		global_rotation.y += clamp(yaw_diff, -deg_to_rad(yaw_speed * delta), deg_to_rad(yaw_speed * delta))
+	# 3. KÄÄNTÄMINEN (Yaw & Pitch)
+	# (Tässä käytät samaa clamp-logiikkaa kuin aiemminkin)
+	var desired_yaw = atan2(-diff.x, -diff.z)
+	var yaw_diff = wrapf(desired_yaw - global_rotation.y, -PI, PI)
+	global_rotation.y += clamp(yaw_diff, -deg_to_rad(yaw_speed * delta), deg_to_rad(yaw_speed * delta))
+	
+	var pitch_diff = target_pitch - gun.rotation.x
+	gun.rotation.x += clamp(pitch_diff, -deg_to_rad(pitch_speed * delta), deg_to_rad(pitch_speed * delta))
+	# 4. AMMUNTA
+	if Input.is_action_pressed("fire") and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		fire_muzzle()
 
-		# AMMUNTA
-		if Input.is_action_pressed("fire") and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			fire_muzzle()
+
 
 func update_target():
 	var hit_node = CameraData.hit_node

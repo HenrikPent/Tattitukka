@@ -149,19 +149,9 @@ func _on_start_multi_pressed():
 
 
 func _on_start_single_pressed():
-	## 1. Haetaan valitun kartan indeksi OptionButtonista
 	var selected_map = map_selector_2.get_selected_id()
-	
-	# 2. Etsitään Main-node (jos MainMenu on sen lapsi, käytä get_parent())
-	# Jos MainMenu on eri skenessä, voit käyttää esim. get_tree().root.get_node("Main")
-	var main_node = get_parent() 
-	
-	if main_node and main_node.has_method("start_singleplayer"):
-		main_node.start_singleplayer(selected_map)
-		# 3. Piilotetaan valikko
-		self.hide()
-	else:
-		print("VIRHE: Main-nodea ei löytynyt tai siinä ei ole start_singleplayer-funktiota!")
+	Singleplayer.start_game(selected_map)
+	self.hide()
 
 
 func _on_back_button_pressed():

@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://4444remad25y" path="res://Units/Vehicles/Ships/Destroyer/ShipDamageManager.gd" id="2_11cm4"]
 [ext_resource type="Script" uid="uid://b5n3n7kvpxqub" path="res://Units/Vehicles/Ships/Carrier/plane_spawner.gd" id="2_11jt6"]
 [ext_resource type="PackedScene" uid="uid://burshulicu6nj" path="res://HUDs/ShipHud/ship_hud.tscn" id="3_ag4s0"]
+[ext_resource type="Script" uid="uid://b83loct86afl6" path="res://Units/Vehicles/Ships/Destroyer/team_marker.gd" id="5_f3i0f"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_hqgen"]
 properties/0/path = NodePath(".:sync_speed_index")
@@ -44,6 +45,11 @@ height = 3.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_nvdkt"]
 size = Vector3(4, 2, 5)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_6hlxq"]
+top_radius = 5.0
+bottom_radius = 0.0
+height = 10.0
 
 [node name="Carrier" type="CharacterBody3D" unique_id=181965197]
 collision_layer = 8
@@ -90,3 +96,8 @@ mesh = SubResource("BoxMesh_nvdkt")
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1486320551]
 
 [node name="ShipHUD" parent="HUD" unique_id=1897236483 instance=ExtResource("3_ag4s0")]
+
+[node name="TeamMarker" type="MeshInstance3D" parent="." unique_id=1994279744]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.816618, 56.794846, -25.113552)
+mesh = SubResource("CylinderMesh_6hlxq")
+script = ExtResource("5_f3i0f")

@@ -17,7 +17,8 @@ func _process(_delta):
 	var mouse_pos = get_viewport().get_mouse_position()
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_direction = camera.project_ray_normal(mouse_pos)
-	var ray_end = ray_origin + ray_direction * 2000 # Ammuntapiiri 2km
+	
+	var ray_end = ray_origin + ray_direction * 4000 # Ammuntapiiri 2km
 	
 	# 1. FYSIKKAKYSELY (Raycast)
 	var space_state = camera.get_world_3d().direct_space_state

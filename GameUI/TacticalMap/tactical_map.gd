@@ -39,6 +39,13 @@ func _update_map():
 	
 	# 2. Päivitetään tai luodaan ikonit
 	for unit in units:
+		if unit.get("team_id") == 0:
+			# Jos unit on “kuollut” → poista ikoni, jos se on vielä olemassa
+			if icon_map.has(unit):
+				icon_map[unit].queue_free()
+				icon_map.erase(unit)
+			continue
+
 		if not icon_map.has(unit):
 			_create_icon_for_unit(unit)
 		
@@ -123,6 +130,8 @@ func _handle_left_click(click_pos: Vector2):
 	var min_dist = 30.0 # Kasvatetaan hieman osumisaluetta (30 pikseliä)
 	
 	for unit in icon_map.keys():
+		if unit.get("team_id") == 0: continue
+		
 		var icon = icon_map[unit]
 		# Käytetään icon.positionia suoraan, jos IconLayer on 0,0 kohdassa
 		var icon_center = icon.position + (icon.size / 2.0)
@@ -163,6 +172,7 @@ func _handle_right_click(click_pos: Vector2):
 	var min_dist = 30.0
 	
 	for unit in icon_map.keys():
+		if unit.get("team_id") == 0: continue
 		if unit == selected_unit: continue # Ei voi seurata itseään
 		
 		var icon = icon_map[unit]
@@ -245,6 +255,8 @@ func _draw():
 
 	for unit in icon_map.keys():
 		if not is_instance_valid(unit): continue
+		
+		if unit.get("team_id") == 0: continue
 		
 		if unit.get("team_id") != my_id: continue
 

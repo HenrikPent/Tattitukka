@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://ch0ickhsmyf2o"]
 
 [ext_resource type="Script" uid="uid://ckaq3pi3tse83" path="res://Maps/Kyyrymeri/sea_floor.gd" id="1_7mrgk"]
+[ext_resource type="Script" uid="uid://dd6vd3lo6ei77" path="res://Maps/Kyyrymeri/MapManager.gd" id="2_ei5om"]
 
 [sub_resource type="Gradient" id="Gradient_ei5om"]
 colors = PackedColorArray(0.34901962, 0.5254902, 0.7411765, 0.48235294, 1, 1, 1, 1)
@@ -207,3 +208,20 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -80, 0)
 
 [node name="Mesh" type="MeshInstance3D" parent="OceanFloor/Floor" unique_id=171632995]
 script = ExtResource("1_7mrgk")
+
+[node name="MapManager" type="Node3D" parent="." unique_id=522847959]
+script = ExtResource("2_ei5om")
+
+[node name="SpawnPoints" type="Node3D" parent="." unique_id=65579339]
+
+[node name="Spawn_T1_1" type="Marker3D" parent="SpawnPoints" unique_id=565182588]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2000, 0, 2000)
+
+[node name="Spawn_T1_2" type="Marker3D" parent="SpawnPoints" unique_id=1633394345]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2000, 0, -2000)
+
+[node name="Spawn_T1_3" type="Marker3D" parent="SpawnPoints" unique_id=170163296]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2000, 0, -2000)
+
+[node name="Spawn_T1_4" type="Marker3D" parent="SpawnPoints" unique_id=82662847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2000, 0, 2000)

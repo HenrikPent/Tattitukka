@@ -136,10 +136,20 @@ func start_game(map_index: int):
 	for id in all_player_ids:
 		main_node.add_player(id)
 	
-	if main_node.has_node("UnitSpawner"):
-		main_node.get_node("UnitSpawner").spawn_starting_units(all_player_ids)
-	
-	# Viimeinen varmistusviive ja peli käyntiin clienteilla
+	# 4. Luodaan pelaajat
+	for id in all_player_ids:
+		main_node.add_player(id)
+
+	# 5. Kerrotaan MapManagerille ketkä osallistuu (Vain serveri tekee spawnin)
+	var map_container = main_node.get_node("MapContainer")
+
+	if map_container.get_child_count() > 0:
+		var current_map = map_container.get_child(0)
+		var map_manager = current_map.get_node_or_null("MapManager")
+		if map_manager:
+			map_manager.setup(all_player_ids)
+
+	# 6. Käynnistetään clientit
 	await get_tree().create_timer(0.2).timeout
 	start_game_rpc.rpc()
 

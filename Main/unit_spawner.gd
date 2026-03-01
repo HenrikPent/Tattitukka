@@ -8,7 +8,7 @@ extends Node
 	"carrier": preload("res://Units/Vehicles/Ships/Carrier/Carrier.tscn"),
 	"rifleman": preload("res://Units/Soldiers/Rifleman/Rifleman.tscn")
 	}
-
+"""
 func spawn_starting_units(player_ids: Array):
 	if not multiplayer.is_server(): return
 
@@ -21,7 +21,7 @@ func spawn_starting_units(player_ids: Array):
 		var base_x = player_slot * 400.0
 		
 		# 1. Destroyerit
-		for i in range(3):
+		for i in range(6):
 			var unit_name = "dest_" + str(id) + "_" + str(i)
 			var spawn_pos = Vector3(base_x + 20, -5, i * 200) # Pieni offset carrieriin
 			var unit = spawn_unit("destroyer", id, spawn_pos, unit_name)
@@ -30,9 +30,9 @@ func spawn_starting_units(player_ids: Array):
 				first_unit = unit
 		
 		# 2. Carrier
-		for i in range(1):
+		for i in range(2):
 			var unit_name = "carrier_" + str(id) + "_" + str(i)
-			var spawn_pos = Vector3(base_x, 0, -500) 
+			var spawn_pos = Vector3(base_x + i*300, 0, -500) 
 			var unit = spawn_unit("carrier", id, spawn_pos, unit_name)
 			
 			# Asetetaan Carrier oletukseksi
@@ -44,7 +44,7 @@ func spawn_starting_units(player_ids: Array):
 			if is_instance_valid(final_unit):
 				UnitManager._perform_switch(id, final_unit)
 		)
-
+"""
 
 func spawn_unit(type: String, team: int, pos: Vector3, nime: String, rot: Vector3 = Vector3.ZERO):
 	if not multiplayer.is_server(): return null

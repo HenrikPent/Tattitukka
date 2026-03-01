@@ -77,6 +77,7 @@ label_settings = SubResource("LabelSettings_fr8op")
 horizontal_alignment = 1
 
 [node name="TESTING" type="Control" parent="Main" unique_id=1198243652]
+visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0

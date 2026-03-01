@@ -22,6 +22,7 @@ CameraData="*uid://cngm3us5laqqj"
 Multiplayer="*uid://03ge5k2lf23w"
 UnitSpawner="*uid://tsryb821r2g"
 UnitManager="*uid://jj5x15rf0n5a"
+Singleplayer="*uid://di77mkoo6sydb"
 
 [dotnet]
 

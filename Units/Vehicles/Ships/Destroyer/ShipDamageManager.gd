@@ -30,7 +30,7 @@ func take_damage(amount: float, hit_pos: Vector3):
 	if current_health <= 0:
 		sink_ship()
 
-func check_module_damage(hit_pos: Vector3):
+func check_module_damage(_hit_pos: Vector3):
 	# Tässä kohtaa vertaat hit_pos:ia laivan moottorin tai tykkien sijaintiin
 	# Jos etäisyys on pieni, vaurioita kyseistä osaa
 	pass

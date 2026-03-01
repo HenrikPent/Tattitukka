@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://bhl3xo5ar3x3v" path="res://Units/Vehicles/Ships/Destroyer/destroyer_turret.gd" id="3_6dt7c"]
 [ext_resource type="Script" uid="uid://dxh5xvwav752h" path="res://Units/Vehicles/Ships/Destroyer/turret_manager.gd" id="3_i4px2"]
 [ext_resource type="PackedScene" uid="uid://cseul83jry2lf" path="res://Units/Vehicles/Ships/Destroyer/muzzle_flash.tscn" id="5_0enge"]
+[ext_resource type="Script" uid="uid://b83loct86afl6" path="res://Units/Vehicles/Ships/Destroyer/team_marker.gd" id="5_rdg3a"]
 [ext_resource type="Script" uid="uid://cyqu21j1a5tmq" path="res://Units/Vehicles/Ships/Destroyer/DestroyerMuzzle.gd" id="6_dg6dm"]
 [ext_resource type="AudioStream" uid="uid://cd8m0a65tmmoq" path="res://Units/Vehicles/Ships/Destroyer/Gun_sound.wav" id="7_dg6dm"]
 
@@ -52,6 +53,11 @@ properties/12/path = NodePath(".:sync_steering_index")
 properties/12/spawn = true
 properties/12/replication_mode = 1
 
+[sub_resource type="CylinderMesh" id="CylinderMesh_d2w44"]
+top_radius = 5.0
+bottom_radius = 0.0
+height = 10.0
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_71o2c"]
 size = Vector3(16, 20, 140)
 
@@ -80,6 +86,11 @@ replication_config = SubResource("SceneReplicationConfig_6dt7c")
 script = ExtResource("2_0fp06")
 
 [node name="blenderhull2" parent="." unique_id=1348920901 instance=ExtResource("1_0knfl")]
+
+[node name="TeamMarker" type="MeshInstance3D" parent="." unique_id=190458676]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.375847, -8.356059)
+mesh = SubResource("CylinderMesh_d2w44")
+script = ExtResource("5_rdg3a")
 
 [node name="Physics collider" type="CollisionShape3D" parent="." unique_id=616247942]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)

@@ -10,38 +10,6 @@ func _ready():
 	# Kun joku yhdistää, serveri hoitaa pelaajan luomisen
 	multiplayer.peer_disconnected.connect(remove_player)
 
-func start_singleplayer(map_index: int):
-	print("Aloitetaan Single Player...")
-	
-	# Luodaan "offline" serveri, jotta is_server() on true ja spawnerit toimivat
-	#var peer = SceneMultiplayer.new()
-	multiplayer.multiplayer_peer = OfflineMultiplayerPeer.new()
-	
-	var seed_val = randi()
-	load_map(map_index, seed_val)
-	
-	add_player(1) # Pelaaja
-	
-	# Luodaan lista, jossa on pelaaja (1) ja AI:t (-1, -2 jne.)
-	var participants = [1]
-	var ai_count = 1
-	for i in range(1, ai_count + 1):
-		participants.append(-i)
-	# Kutsutaan unittien spawneria
-	# Annetaan sille lista, jossa on vain sinun ID (1)
-	if has_node("UnitSpawner"):
-		$UnitSpawner.spawn_starting_units(participants)
-	
-	
-	if has_node("UI/TacticalMap"):
-		$UI/TacticalMap.setup($Units)
-		print("DEBUG: TacticalMap setup valmis. Kohde: ", $Units.get_path())
-	
-	if has_node("UI/HelpUI"):
-		$UI/HelpUI.visible = true
-	
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
 
 func add_player(id: int):
 	
