@@ -59,7 +59,13 @@ bottom_radius = 0.0
 height = 10.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_71o2c"]
-size = Vector3(16, 20, 140)
+size = Vector3(16, 14, 140)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rdg3a"]
+size = Vector3(16, 5, 92)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_yne8w"]
+size = Vector3(14, 7, 43)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dg6dm"]
 albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
@@ -86,6 +92,7 @@ replication_config = SubResource("SceneReplicationConfig_6dt7c")
 script = ExtResource("2_0fp06")
 
 [node name="blenderhull2" parent="." unique_id=1348920901 instance=ExtResource("1_0knfl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
 
 [node name="TeamMarker" type="MeshInstance3D" parent="." unique_id=190458676]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.375847, -8.356059)
@@ -93,10 +100,10 @@ mesh = SubResource("CylinderMesh_d2w44")
 script = ExtResource("5_rdg3a")
 
 [node name="Physics collider" type="CollisionShape3D" parent="." unique_id=616247942]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 shape = SubResource("BoxShape3D_71o2c")
 
 [node name="HitBox" type="Area3D" parent="." unique_id=1816947858]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -10, 0)
 collision_layer = 8
 collision_mask = 30
 
@@ -104,15 +111,24 @@ collision_mask = 30
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 shape = SubResource("BoxShape3D_71o2c")
 
+[node name="CollisionShape2" type="CollisionShape3D" parent="HitBox" unique_id=1797262892]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 19, 12)
+shape = SubResource("BoxShape3D_rdg3a")
+
+[node name="CollisionShape3" type="CollisionShape3D" parent="HitBox" unique_id=1585276391]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 7)
+shape = SubResource("BoxShape3D_yne8w")
+
 [node name="TurretManager" type="Node3D" parent="." unique_id=375701129 node_paths=PackedStringArray("guns")]
 script = ExtResource("3_i4px2")
 guns = [NodePath("../Turret1/Gun/Muzzle1"), NodePath("../Turret1/Gun/Muzzle2"), NodePath("../Turret2/Gun/Muzzle1"), NodePath("../Turret2/Gun/Muzzle2"), NodePath("../Turret3/Gun/Muzzle1"), NodePath("../Turret3/Gun/Muzzle2"), NodePath("../Turret4/Gun/Muzzle1"), NodePath("../Turret4/Gun/Muzzle2")]
 
 [node name="Turret1" parent="." unique_id=331245451 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16, -26)
+transform = Transform3D(-0.64769447, 0, 0.7619, 0, 1, 0, -0.7619, 0, -0.64769447, 0, 11, -26)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
+forbidden_width = 100.0
 
 [node name="Gun" type="Node3D" parent="Turret1" unique_id=943449069]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
@@ -144,10 +160,11 @@ script = ExtResource("6_dg6dm")
 stream = ExtResource("7_dg6dm")
 
 [node name="Turret2" parent="." unique_id=553917807 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, 0, 16, 49.375122)
+transform = Transform3D(0.871445, 0, -0.49049297, 0, 1, 0, 0.49049297, 0, 0.871445, 0, 11, 49.375)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
+is_front = false
 
 [node name="Gun" type="Node3D" parent="Turret2" unique_id=2006073625]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
@@ -179,10 +196,11 @@ script = ExtResource("6_dg6dm")
 stream = ExtResource("7_dg6dm")
 
 [node name="Turret3" parent="." unique_id=1629175352 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 12, -54.116)
+transform = Transform3D(-0.82234275, 0, 0.5689926, 0, 1, 0, -0.5689926, 0, -0.82234275, 0, 7, -54.116)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
+forbidden_width = 70.0
 
 [node name="Gun" type="Node3D" parent="Turret3" unique_id=1334708033]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)
@@ -214,10 +232,12 @@ script = ExtResource("6_dg6dm")
 stream = ExtResource("7_dg6dm")
 
 [node name="Turret4" parent="." unique_id=867427974 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
-transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 12, 68.131)
+transform = Transform3D(0.58198106, 0, -0.8132023, 0, 1, 0, 0.8132023, 0, 0.58198106, 0, 7, 68.131)
 script = ExtResource("3_6dt7c")
 gun = NodePath("Gun")
 muzzles = [NodePath("Gun/Muzzle1"), NodePath("Gun/Muzzle2")]
+is_front = false
+forbidden_width = 100.0
 
 [node name="Gun" type="Node3D" parent="Turret4" unique_id=620379278]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -4)

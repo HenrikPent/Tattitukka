@@ -1,8 +1,9 @@
 # Turret.gd
 extends Node3D
-
+@export_group("Setup")
 @export var gun: Node3D
 @export var muzzles: Array[Node3D] = []
+@export var is_front: bool = true
 
 # Kaliberijärjestelmä (säilytetty ennallaan)
 enum CaliberType { CAL_127mm, CAL_280mm, CAL_406mm }
@@ -39,6 +40,10 @@ var caliber_settings = {
 	}
 }
 
+@export_group("Turret Settings")
+@export var forbidden_width: float = 60.0 # kielletyn sektorin leveys asteina (puolet kummallekin puolelle)
+var rest_yaw: float = 0.0        # lepoasento asteina, 0 = keula, 180 = perä
+
 # Sisäiset muuttujat
 var is_player_controlled: bool = true
 var attack_target: Node3D = null
@@ -51,6 +56,8 @@ var yaw_speed: float
 var pitch_speed: float
 var current_up_max: float
 var current_down_max: float
+
+var is_aim_ready: bool = false
 
 # Debug
 var _last_debug_unit: Node = null
@@ -172,34 +179,86 @@ func _get_aim_position() -> Vector3:
 
 func _rotate_towards(target_pos: Vector3, delta: float) -> void:
 	var diff = target_pos - gun.global_transform.origin
+	var ship = get_parent()
+	
+	# --- 1. LASKETAAN ALKUPERÄINEN TAVOITE ---
+	# Tallennetaan mihin pelaaja/AI HALUAISI tähdätä (radiaaneina)
+	var true_desired_yaw = atan2(-diff.x, -diff.z)
+	
+	# Luodaan muuttuja liikkumista varten (tätä muokataan, jos kohde on kielletty)
+	var move_target_yaw = true_desired_yaw
+	
+	# --- 2. KIELLETYT VYÖHYKKEET (Paikallinen tarkistus asteina) ---
+	# Lasketaan kohteen kulma suhteessa laivan keulaan (-180...180)
+	var local_target_angle = wrapf(rad_to_deg(true_desired_yaw - ship.global_rotation.y), -180.0, 180.0)
+	
+	# Määritetään kielletty keskiö: Etutykille perä (180), Takatykille keula (0)
+	var forbidden_center = 180.0 if is_front else 0.0
+	var half_width = forbidden_width / 2.0
+	
+	# Lasketaan kuinka kaukana kohde on kielletyn alueen keskipisteestä
+	var dist_to_forbidden = wrapf(local_target_angle - forbidden_center, -180.0, 180.0)
+	
+	var target_is_blocked = false
+	if abs(dist_to_forbidden) < half_width:
+		# Kohde ON kielletyllä alueella!
+		target_is_blocked = true
+		
+		# Pakotetaan paikallinen tavoitekulma lähimmälle sallitulle reunalle
+		var sign_dir = 1.0 if dist_to_forbidden > 0 else -1.0
+		var limited_local = wrapf(forbidden_center + (half_width * sign_dir), -180.0, 180.0)
+		
+		# Päivitetään liikkumiseen käytettävä yaw vastaamaan tätä rajoitettua kulmaa
+		move_target_yaw = ship.global_rotation.y + deg_to_rad(limited_local)
+		# Päivitetään myös kääntymislogiikkaa varten käytettävä lta_rad
+		local_target_angle = limited_local
 
-	# --- Yaw ---
-	var desired_yaw = atan2(-diff.x, -diff.z)
-	var yaw_diff    = wrapf(desired_yaw - global_rotation.y, -PI, PI)
-	global_rotation.y += clamp(
-		yaw_diff,
-		-deg_to_rad(yaw_speed * delta),
-		 deg_to_rad(yaw_speed * delta)
-	)
-
-	# --- Pitch (ballistinen) ---
+	# --- 3. KÄÄNTYMISLOGIIKKA (Lyhin reitti vs. rungon läpi kiertäminen) ---
+	# Lasketaan ero tykin nykyisen kulman ja (rajoitetun) tavoitteen välillä
+	var yaw_diff = wrapf(move_target_yaw - global_rotation.y, -PI, PI)
+	
+	var local_turret_angle = wrapf(global_rotation.y - ship.global_rotation.y, -PI, PI)
+	var lta_rad = deg_to_rad(local_target_angle)
+	
+	if is_front:
+		# Etutykki: jos matka tavoitteeseen ylittää 180 astetta, se yrittäisi kääntyä perän läpi.
+		# Pakotetaan kierto toiseen suuntaan.
+		if abs(lta_rad - local_turret_angle) > PI:
+			yaw_diff = -sign(yaw_diff) * (2.0 * PI - abs(yaw_diff))
+	else:
+		# Takatykki: jos tykki ja kohde ovat eri puolilla laivaa ja keulan ylitys on lyhyempi reitti.
+		# Pakotetaan kierto perän kautta.
+		if (lta_rad * local_turret_angle) < 0:
+			if abs(lta_rad - local_turret_angle) < PI:
+				yaw_diff = -sign(yaw_diff) * (2.0 * PI - abs(yaw_diff))
+	
+	# --- 4. TOTEUTETAAN KÄÄNTYMINEN (YAW) ---
+	var step = deg_to_rad(yaw_speed * delta)
+	global_rotation.y += clamp(yaw_diff, -step, step)
+	
+	# --- 5. PITCH (Pystysuunta) ---
 	var horiz_dist = Vector2(diff.x, diff.z).length()
-	var vert_diff  = diff.y
-	var target_pitch = _calc_ballistic_pitch(horiz_dist, vert_diff)
-
-	var pitch_diff = target_pitch - gun.rotation.x
-	gun.rotation.x += clamp(
-		pitch_diff,
-		-deg_to_rad(pitch_speed * delta),
-		 deg_to_rad(pitch_speed * delta)
-	)
-
-	# Rajoitetaan kulma
-	gun.rotation.x = clamp(
-		gun.rotation.x,
-		deg_to_rad(current_down_max),
-		deg_to_rad(current_up_max)
-	)
+	var target_pitch = _calc_ballistic_pitch(horiz_dist, diff.y)
+	
+	# Jos kohde on kielletyllä alueella tai tykki on rajoitettu, lasketaan piippu 0-asentoon
+	if target_is_blocked:
+		target_pitch = 0.0
+	
+	var p_diff = target_pitch - gun.rotation.x
+	var p_step = deg_to_rad(pitch_speed * delta)
+	gun.rotation.x += clamp(p_diff, -p_step, p_step)
+	
+	# Rajoitetaan piippu kaliiperiasetusten mukaan
+	gun.rotation.x = clamp(gun.rotation.x, deg_to_rad(current_down_max), deg_to_rad(current_up_max))
+	
+	# --- 6. VALMIUSTARKISTUS (Voiko ampua?) ---
+	# Verrataan tykin nykyistä kulmaa TODELLISEEN tavoitteeseen (missä hiiri/target on)
+	var final_error = abs(rad_to_deg(wrapf(true_desired_yaw - global_rotation.y, -PI, PI)))
+	
+	# Tykki saa ampua vain jos:
+	# - Kohde ei ole kielletyllä vyöhykkeellä
+	# - Tykki on kääntynyt alle 2 asteen päähän todellisesta kohteesta
+	is_aim_ready = (not target_is_blocked) and (final_error < 2.0)
 
 
 func _calc_ballistic_pitch(x: float, y: float) -> float:
@@ -208,7 +267,7 @@ func _calc_ballistic_pitch(x: float, y: float) -> float:
 	var g  = gravity
 	var v2 = v * v
 	var discriminant = v2 * v2 - g * (g * x * x + 2.0 * y * v2)
-
+	
 	if discriminant >= 0.0:
 		return atan((v2 - sqrt(discriminant)) / (g * x))
 	else:
@@ -255,6 +314,7 @@ func _debug_unit_under_aim(aim_pos: Vector3) -> void:
 # --- AMMUNTA ---
 
 func fire_muzzle() -> void:
+	if !is_aim_ready: return
 	var shooter_id = owner.get_multiplayer_authority()
 	for muzzle in muzzles:
 		if muzzle.turret_control and muzzle.gun_index != -1:

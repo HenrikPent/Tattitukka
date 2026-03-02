@@ -25,13 +25,10 @@ transform = Transform3D(-5, 0, 2.1855695e-07, 0, 5, 0, -4.371139e-07, 0, -2.5, 0
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.3, 0, 3.1)
 mesh = SubResource("CylinderMesh_pqdeq")
 
-[node name="Muzzle1" type="Node3D" parent="Gun/Barrel1" unique_id=132019914 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
+[node name="Muzzle1" type="Node3D" parent="Gun/Barrel1" unique_id=132019914]
 transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.2992334, -2.3841858e-07)
 visible = false
 script = ExtResource("2_w20v1")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
 [node name="MuzzleFlash" parent="Gun/Barrel1/Muzzle1" unique_id=525202144 instance=ExtResource("3_b880d")]
 
@@ -42,13 +39,10 @@ stream = ExtResource("4_qhek7")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.3, 0, 3.1)
 mesh = SubResource("CylinderMesh_pqdeq")
 
-[node name="Muzzle2" type="Node3D" parent="Gun/Barrel2" unique_id=1705243267 node_paths=PackedStringArray("muzzle", "muzzle_flash", "fire_sound")]
+[node name="Muzzle2" type="Node3D" parent="Gun/Barrel2" unique_id=1705243267]
 transform = Transform3D(1, 0, 0, 0, 1, 1.4210855e-14, 0, 7.1054274e-15, 1, 0, 3.3355303, -2.3841858e-07)
 visible = false
 script = ExtResource("2_w20v1")
-muzzle = NodePath(".")
-muzzle_flash = NodePath("MuzzleFlash")
-fire_sound = NodePath("AudioStreamPlayer3D")
 
 [node name="MuzzleFlash" parent="Gun/Barrel2/Muzzle2" unique_id=154377153 instance=ExtResource("3_b880d")]
 
