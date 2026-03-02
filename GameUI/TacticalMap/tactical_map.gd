@@ -21,6 +21,11 @@ func _process(_delta):
 	if not visible or units_node == null:
 		return
 	
+	# Synkronoidaan kartan korostus UnitManagerin todellisen hallitun yksikön kanssa
+	if selected_unit != UnitManager.controlled_unit:
+		selected_unit = UnitManager.controlled_unit
+		_highlight_selected_icon()
+	
 	_update_map()
 	queue_redraw()
 

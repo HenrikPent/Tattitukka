@@ -9,8 +9,8 @@ var authority_cooldown := 0.0
 @export_group("Camera Settings")
 @export var cam_mode_fixed: bool = false
 @export var cam_offset := Vector3(0, 70, 0)
-@export var cam_min_dist := 10.0
-@export var cam_max_dist := 150.0
+@export var cam_near := 100.0
+@export var cam_far := 200.0
 @export_group("") # Tämä tyhjä merkkijono "sulkee" edellisen ryhmän
 
 @onready var hud: Control = $HUD/ShipHUD
@@ -96,54 +96,44 @@ func set_hud_active(active: bool):
 		hud.visible = active
 
 func _read_player_input() -> void:
-	# 1. Jos en ole auktoriteetti, en missään nimessä koske muuttujiin
-	if not is_multiplayer_authority():
-		return
-		
-	# 2. Jos olen vasta saanut hallinnan, odotan cooldownin loppuun
-	if authority_cooldown > 0:
+	if not is_multiplayer_authority() or authority_cooldown > 0:
 		return
 
 	if UnitManager.controlled_unit != self:
 		return
-	
-	# Vain auktoriteetti saa suorittaa input-logiikan loppuun asti
-	# koska muuttujat ovat synkronoituja!
-	if not is_multiplayer_authority():
-		return
 
-
+	# Tarkistetaan, painaako pelaaja jotain ohjausnäppäintä TÄLLÄ HETKELLÄ
 	var throttle_up = Input.is_action_just_pressed("forward")
 	var throttle_down = Input.is_action_just_pressed("backward")
-	
-	# Tarkistetaan A ja D syötteet
-	var steer_input = Input.get_axis("right", "left") # A positiivinen, D negatiivinen
-	
-	# 1. NOPEUDEN OHJAUS (Kuten ennenkin)
-	if throttle_up or throttle_down:
-		if not is_multiplayer_authority():
-			print("!!! VAROITUS: Client yrittää muuttaa nopeutta ilman auktoriteettia!")
-		else:
-			is_player_controlled = true
-			if throttle_up: sync_speed_index = clampi(sync_speed_index + 1, 0, 6)
-			if throttle_down: sync_speed_index = clampi(sync_speed_index - 1, 0, 6)
+	var steer_left = Input.is_action_pressed("left")
+	var steer_right = Input.is_action_pressed("right")
+	var steer_input = Input.get_axis("right", "left")
 
-	# 2. PERÄSIMEN OHJAUS (Uusi portaittainen logiikka)
-	if steer_input != 0:
-		is_player_controlled = true
-		
-		# Jos nappi juuri painettiin alas
-		if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
-			_change_steering(steer_input)
-			steer_repeat_timer = 0.0 # Nollataan viive
-		else:
-			# Nappia pidetään pohjassa
-			steer_repeat_timer += get_process_delta_time()
-			if steer_repeat_timer >= repeat_delay:
+	# OTETAAN HALLINTA VAIN JOS PELAAJA SYÖTTÄÄ JOTAIN
+	# (Huom: Ammuntanapit tai kamera eivät triggeröi tätä, koska ne eivät muuta liiketilaa)
+	if throttle_up or throttle_down or steer_left or steer_right:
+		if not is_player_controlled:
+			is_player_controlled = true
+			print("[Ship] Pelaaja otti manuaaliohjauksen: ", name)
+
+	# Suoritetaan ohjauslogiikka vain jos ollaan pelaaja-moodissa
+	if is_player_controlled:
+		# 1. NOPEUDEN OHJAUS
+		if throttle_up: sync_speed_index = clampi(sync_speed_index + 1, 0, 6)
+		if throttle_down: sync_speed_index = clampi(sync_speed_index - 1, 0, 6)
+
+		# 2. PERÄSIMEN OHJAUS
+		if steer_input != 0:
+			if Input.is_action_just_pressed("left") or Input.is_action_just_pressed("right"):
 				_change_steering(steer_input)
-				steer_repeat_timer = 0.0 # Nollataan seuraavaa askelta varten
-	else:
-		steer_repeat_timer = 0.0
+				steer_repeat_timer = 0.0
+			else:
+				steer_repeat_timer += get_process_delta_time()
+				if steer_repeat_timer >= repeat_delay:
+					_change_steering(steer_input)
+					steer_repeat_timer = 0.0
+		else:
+			steer_repeat_timer = 0.0
 
 
 func _change_steering(direction: float):
@@ -162,18 +152,30 @@ func _run_ai_logic() -> void:
 	# 1. HYÖKKÄYS (Korkein prioriteetti)
 	if is_instance_valid(attack_target):
 		attack_ship()
+		return
 
 	# 2. SEURANTA
 	if is_instance_valid(follow_target):
 		var rotated_offset = follow_target.global_transform.basis * formation_offset
 		var leader_target_pos = follow_target.global_position + rotated_offset
-		_drive_towards(leader_target_pos)
+		var dist_to_formation_spot = global_position.distance_to(leader_target_pos)
+		
+		# Tarkistetaan onko johtaja pysähtynyt (vauhti-indeksi 2 = STOP)
+		var leader_is_stopped = follow_target.get("sync_speed_index") == 2
+		
+		# Jos johtaja on pysähtynyt JA ollaan jo lähellä omaa paikkaa (100m)
+		if leader_is_stopped and dist_to_formation_spot < 100.0:
+			sync_speed_index = 2      # STOP
+			sync_steering_index = 3   # MIDSHIPS
+		else:
+			# Muuten ajetaan normaalisti kohti muodostelmapaikkaa
+			_drive_towards(leader_target_pos)
 		return
 
 	# 3. PISTEESEEN AJAMINEN
 	if ai_target_pos != null:
 		var dist_to_target = global_position.distance_to(ai_target_pos)
-		if dist_to_target < 25.0:
+		if dist_to_target < 100.0:
 			ai_target_pos = null
 			sync_speed_index = 2 # STOP
 			sync_steering_index = 3 # MIDSHIPS
@@ -182,21 +184,43 @@ func _run_ai_logic() -> void:
 	else:
 		sync_steering_index = 3
 
-# Apufunktio ohjaamiseen
+# Apufunktio ohjaamiseen (Päivitetty peruutuslogiikalla)
 func _drive_towards(target: Vector3):
+	var dist = global_position.distance_to(target)
 	var to_target = global_position.direction_to(target)
 	var forward = -global_transform.basis.z
-	var angle_to = forward.signed_angle_to(to_target, Vector3.UP)
-
-	# AI käyttää maksimikääntöä jos kulma on suuri
-	if angle_to > 0.1:
-		sync_steering_index = 0 # Hard Port
-	elif angle_to < -0.1:
-		sync_steering_index = 6 # Hard Starboard
-	else:
-		sync_steering_index = 3 # Midships
 	
-	sync_speed_index = 4 # 1/2 Ahead
+	# Kulma kohteeseen (-PI ... PI)
+	var angle_to = forward.signed_angle_to(to_target, Vector3.UP)
+	
+	# --- PERUUTUSLOGIIKKA ---
+	# Jos kohde on takana (kulma > 90 astetta molemmin puolin) 
+	# JA kohde on lähempänä kuin 200m
+	var is_behind = abs(angle_to) > (PI * 0.5) # Yli 90 astetta
+	
+	if is_behind and dist < 300.0:
+		# PERUUTETAAN
+		sync_speed_index = 1 # Half Reverse (tai 0 Full Reverse)
+		
+		# INVERTOITU OHJAUS:
+		# Kun peruutetaan, jos kohde on "vasemmalla takana", 
+		# peräsintä pitää kääntää OIKEALLE, jotta perä kääntyy kohti kohdetta.
+		# angle_to on positiivinen vasemmalle, joten käännetään logiikka:
+		if angle_to > 0: # Kohde vasemmalla takana
+			sync_steering_index = 6 # Hard Starboard
+		else: # Kohde oikealla takana
+			sync_steering_index = 0 # Hard Port
+			
+	else:
+		# AJETAAN ETEENPÄIN (Normaali logiikka)
+		sync_speed_index = 4 # 1/2 Ahead
+		
+		if angle_to > 0.1:
+			sync_steering_index = 0 # Hard Port
+		elif angle_to < -0.1:
+			sync_steering_index = 6 # Hard Starboard
+		else:
+			sync_steering_index = 3 # Midships
 
 
 func set_ai_target(pos: Vector3):
@@ -281,7 +305,8 @@ func _apply_movement(delta: float) -> void:
 	if abs(current_speed) > 0.1:
 		var rotation_dir = current_steering_output
 		# Jos peruutetaan, kääntö on käänteinen
-		if current_speed < 0: rotation_dir *= -1
+		if current_speed < 0: 
+			rotation_dir *= -1
 		rotate_y(rotation_dir * turn_speed * delta)
 	
 	# Liike
@@ -295,41 +320,51 @@ func attack_ship() -> void:
 	
 	var target_pos = attack_target.global_position
 	var dist = global_position.distance_to(target_pos)
+	
+	# 1. Lasketaan suunta viholliseen
 	var to_target = global_position.direction_to(target_pos)
+	var forward = -global_transform.basis.z
 	
-	# --- 1. ETÄISYYDEN HALLINTA ---
-	if dist > 700.0:
-		# Liian kaukana -> Aja suoraan kohti
+	# Lasketaan kulma viholliseen (radiaaneina, -PI ... PI)
+	# 0 = vihollinen edessä, PI/-PI = vihollinen takana, PI/2 = vihollinen sivulla
+	var angle_to_enemy = forward.signed_angle_to(to_target, Vector3.UP)
+	
+	# --- TILA: LIIAN KAUKANA (Aja kohti) ---
+	if dist > 800.0:
 		_drive_towards(target_pos)
-		sync_speed_index = 6 # Full Ahead
-	
-	elif dist < 450.0:
-		# Liian lähellä -> Käänny poispäin tai peruuta
+		sync_speed_index = 6 # Täysi vauhti
+		
+	# --- TILA: LIIAN LÄHELLÄ (Aja poispäin) ---
+	elif dist < 300.0:
 		var escape_pos = global_position - to_target * 100.0
 		_drive_towards(escape_pos)
-		sync_speed_index = 3 # Slow
+		sync_speed_index = 4 # Puolivauhti
 		
+	# --- TILA: TAISTELUETÄISYYS (Broadside) ---
 	else:
-		# --- 2. KYLKI KOHTI (BROADSIDE) ---
-		# Lasketaan tangenttipiste vihollisen ympäriltä
-		# Vector3.UP on normaali, jonka ympäri pyöräytetään 90 astetta
-		var side_direction = to_target.cross(Vector3.UP).normalized()
+		# Päätetään kumpi kylki on lähempänä (Vasen vai Oikea)
+		# Tavoitekulma on joko 90 astetta (PI/2) tai -90 astetta (-PI/2)
+		var target_angle = PI/2 if angle_to_enemy > 0 else -PI/2
 		
-		# Valitaan kumpi kylki on jo valmiiksi lähempänä vihollista
-		var forward = -global_transform.basis.z
-		if forward.dot(side_direction) < 0:
-			side_direction = -side_direction
-			
-		# Kohdepiste on tangentin suunnassa
-		var broadside_target = global_position + side_direction * 100.0
-		
-		_drive_towards(broadside_target)
-		
-		# Säädetään nopeutta etäisyyden mukaan optimaalisella alueella
+		# Jos halutaan "sulkea etäisyyttä" samalla kun käännytään kylki edellä, 
+		# voidaan tavoitekulmaa hieman pienentää (esim. 70 astetta 90 sijaan)
 		if dist > 600.0:
-			sync_speed_index = 4 # 1/2 Ahead
+			target_angle *= 0.8 # Kääntyy hieman enemmän vihollista KOHTI
+		elif dist < 450.0:
+			target_angle *= 1.2 # Kääntyy hieman enemmän POISPÄIN
+			
+		# Lasketaan kuinka paljon meidän täytyy kääntyä saavuttaaksemme tavoitekulman
+		var steer_error = angle_to_enemy - target_angle
+		
+		# Ohjataan peräsintä virheen mukaan
+		if steer_error > 0.1:
+			sync_steering_index = 0 # Hard Port
+		elif steer_error < -0.1:
+			sync_steering_index = 6 # Hard Starboard
 		else:
-			sync_speed_index = 3 # 1/4 Ahead
+			sync_steering_index = 3 # Midships
+			
+		sync_speed_index = 4 # Taistelunopeus
 
 
 func start_sinking():

@@ -4,17 +4,45 @@ extends Control
 @onready var speed_roller: VBoxContainer = $Speed/VBoxContainer
 @onready var steer_roller: HBoxContainer = $Steering/HBoxContainer 
 
-@export var label_height : float = 27.0 
-@export var label_width : float = 27.0 # Yhden ohjaustekstin varattu leveys
+@export var label_height : float = 27.0 # Yhden nopeustekstin korkeus
+@export var label_width : float = 27.0 # Yhden ohjaustekstin leveys
+
+@onready var mode_label: Label = $ControlMode/Status
+
+@onready var auto_pilot: Control = $AutoPilot
+@onready var current_task: Label = $AutoPilot/CurrentMode
 
 @onready var ship = get_parent().get_parent() 
+
+
+
 
 func _process(delta: float) -> void:
 	if not is_instance_valid(ship):
 		return
 	
-	_update_speed_roller(ship, delta)
-	_update_steering_roller(ship, delta)
+	var is_player = ship.get("is_player_controlled")
+	
+	# --- NÄKYVYYS ---
+	# Mittarit näkyvät vain manuaaliohjauksessa
+	$Speed.visible = is_player
+	$Steering.visible = is_player
+	$AutoPilot.visible = !is_player
+	
+	# --- PÄIVITYKSET ---
+	if is_player:
+		# Päivitetään rullat vain jos ne ovat näkyvissä (säästää hieman tehoja)
+		_update_speed_roller(ship, delta)
+		_update_steering_roller(ship, delta)
+		
+		# Manuaalitilassa mode_label näyttää vain "MANUAL"
+		mode_label.text = "OFF"
+		mode_label.modulate = Color.WHITE
+	else:
+		# Autopilottitilassa mode_label näyttää AI:n nykyisen tehtävän
+		_update_ai_status_label(ship)
+		mode_label.text = "ON"
+		mode_label.modulate = Color.LIME_GREEN
 
 func _update_speed_roller(ship_ref: Node3D, delta: float) -> void:
 	var index = ship_ref.get("sync_speed_index")
@@ -40,6 +68,35 @@ func _update_steering_roller(ship_ref: Node3D, delta: float) -> void:
 	steer_roller.position.x = lerp(steer_roller.position.x, target_x, 12.0 * delta)
 	
 	_apply_effects(steer_roller.get_children(), index, delta)
+
+func _update_mode_label(ship_ref: Node3D) -> void:
+	if not mode_label: return
+	
+	var is_player = ship_ref.get("is_player_controlled")
+	if is_player:
+		mode_label.text = "OFF"
+		mode_label.modulate = Color.WHITE # Oranssi/Kulta kun pelaaja ajaa
+	else:
+		mode_label.text = "ON"
+		mode_label.modulate = Color.LIME_GREEN # Syaani kun AI ajaa
+
+# Uusi funktio, joka päättelee AI:n tilan ship-muuttujista
+func _update_ai_status_label(ship_ref: Node3D) -> void:
+	if not current_task: return
+	
+	var status_text = "AUTOPILOT: STANDBY" # Oletus
+	
+	if is_instance_valid(ship_ref.get("attack_target")):
+		status_text = "ENGAGING TARGET"
+	elif is_instance_valid(ship_ref.get("follow_target")):
+		status_text = "FOLLOWING LEADER"
+	elif ship_ref.get("ai_target_pos") != null:
+		status_text = "NAVIGATING"
+	elif ship_ref.get("sync_speed_index") == 2: # STOP
+		status_text = "IDLE"
+
+	current_task.text = status_text
+
 
 # Yleiskäyttöinen funktio labelien korostamiseen
 func _apply_effects(labels: Array, active_index: int, delta: float) -> void:

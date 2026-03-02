@@ -166,7 +166,7 @@ func _get_aim_position() -> Vector3:
 	var space = get_world_3d().direct_space_state
 	var query = PhysicsRayQueryParameters3D.create(
 		ray_origin,
-		ray_origin + ray_dir * 2000.0
+		ray_origin + ray_dir * 5000.0
 	)
 	query.collision_mask = 8  # layer 3 (maa/meri)
 

@@ -10,8 +10,8 @@ extends CharacterBody3D
 @export_group("Camera Settings")
 @export var cam_mode_fixed: bool = true
 @export var cam_offset := Vector3(0, 5, 0) 
-@export var cam_min_dist := 20.0
-@export var cam_max_dist := 20.0
+@export var cam_near_dist := 20.0
+@export var cam_far_dist := 20.0
 
 @export_group("Flight Physics")
 var min_thrust: float = 100.0

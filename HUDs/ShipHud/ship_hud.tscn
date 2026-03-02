@@ -7,6 +7,9 @@
 font_size = 21
 font_color = Color(0.19215687, 0.19607843, 0.18039216, 1)
 
+[sub_resource type="LabelSettings" id="LabelSettings_xn08s"]
+font_size = 12
+
 [node name="ShipHUD" type="Control" unique_id=1897236483]
 layout_mode = 3
 anchors_preset = 15
@@ -38,7 +41,15 @@ pivot_offset = Vector2(4, 4)
 mouse_filter = 2
 color = Color(1, 0, 0, 1)
 
+[node name="BackGorund" type="ColorRect" parent="." unique_id=1655791077]
+layout_mode = 0
+offset_top = 404.0
+offset_right = 142.0
+offset_bottom = 639.0
+color = Color(0.14406255, 0.14406255, 0.14406255, 1)
+
 [node name="Speed" type="Control" parent="." unique_id=187091655]
+visible = false
 anchors_preset = 0
 offset_left = 37.0
 offset_top = 550.0
@@ -137,6 +148,7 @@ text = "Full"
 horizontal_alignment = 1
 
 [node name="Steering" type="Control" parent="." unique_id=1565627971]
+visible = false
 anchors_preset = 0
 offset_left = 24.0
 offset_top = 469.0
@@ -155,9 +167,10 @@ color = Color(0.19131765, 0.19762558, 0.17879257, 1)
 
 [node name="ColorRect2" type="ColorRect" parent="Steering/ColorRect" unique_id=1669768871]
 layout_mode = 0
-offset_left = 10.5
-offset_top = -29.0
-offset_right = 121.5
+offset_left = 10.0
+offset_top = -30.0
+offset_right = 121.0
+offset_bottom = -1.0
 mouse_filter = 2
 
 [node name="Label" type="Label" parent="Steering/ColorRect/ColorRect2" unique_id=2135137878]
@@ -211,3 +224,72 @@ horizontal_alignment = 1
 layout_mode = 2
 text = ">>>"
 horizontal_alignment = 1
+
+[node name="ControlMode" type="Control" parent="." unique_id=1930494492]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+mouse_filter = 2
+
+[node name="ColorRect2" type="ColorRect" parent="ControlMode" unique_id=810857513]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 408.0
+offset_right = 137.0
+offset_bottom = 430.0
+mouse_filter = 2
+color = Color(0.19131765, 0.19762558, 0.17879257, 1)
+
+[node name="AUTOPILOT" type="Label" parent="ControlMode" unique_id=179202306]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 407.0
+offset_right = 97.0
+offset_bottom = 430.0
+text = "AUTOPILOT"
+
+[node name="Status" type="Label" parent="ControlMode" unique_id=408053914]
+layout_mode = 0
+offset_left = 104.0
+offset_top = 407.0
+offset_right = 134.0
+offset_bottom = 430.0
+text = "OFF"
+
+[node name="AutoPilot" type="Control" parent="." unique_id=1171626687]
+anchors_preset = 0
+offset_left = -1.0
+offset_top = 28.0
+offset_right = 39.0
+offset_bottom = 68.0
+mouse_filter = 2
+
+[node name="ColorRect2" type="ColorRect" parent="AutoPilot" unique_id=643548728]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 408.0
+offset_right = 137.0
+offset_bottom = 453.0
+mouse_filter = 2
+color = Color(0.19131765, 0.19762558, 0.17879257, 1)
+
+[node name="MODE" type="Label" parent="AutoPilot" unique_id=768026649]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 407.0
+offset_right = 137.0
+offset_bottom = 498.0
+text = "MODE:"
+horizontal_alignment = 1
+
+[node name="CurrentMode" type="Label" parent="AutoPilot" unique_id=905591269]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 434.0
+offset_right = 137.0
+offset_bottom = 485.0
+text = "TEST
+TEST"
+label_settings = SubResource("LabelSettings_xn08s")
+horizontal_alignment = 1
+autowrap_mode = 2

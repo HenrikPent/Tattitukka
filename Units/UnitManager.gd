@@ -40,7 +40,6 @@ func _perform_switch(player_id: int, new_unit: Node3D):
 	
 	# --- UUDEN YKSIKÖN HALTUUNOTTO ---
 	new_unit.set_multiplayer_authority(player_id)
-	new_unit.is_player_controlled = true
 	
 	# Päivitetään lista kaikille
 	if player_id == multiplayer.get_unique_id():
@@ -66,9 +65,9 @@ func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	for key in controlled_units.keys():
 		if not is_instance_valid(controlled_units[key]):
 			dead_ids.append(key)
-	
 	for id in dead_ids:
 		controlled_units.erase(id)
+	
 	
 	if p_id == 0:
 		# Yksikkö vapautui AI:lle
@@ -77,6 +76,8 @@ func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 			unit.is_player_controlled = false
 			unit.set_hud_active(false) # Varmistetaan että HUD sammuu AI:lla
 			
+			# SIIVOUS: Etsitään kuka tätä unittia hallitsi ja poistetaan merkintä
+			# Tämä on kriittistä, jotta UnitManager tietää laivan olevan vapaa
 			for key in controlled_units.keys():
 				if controlled_units[key] == unit:
 					controlled_units.erase(key)
@@ -89,11 +90,9 @@ func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 		
 		if p_id == multiplayer.get_unique_id():
 			controlled_unit = unit
-			unit.is_player_controlled = true
 			# --- HUDIN KÄYNNISTYS ---
 			unit.set_hud_active(true)
 		else:
-			unit.is_player_controlled = true
 			# Muiden pelaajien yksiköillä HUD pysyy kiinni
 			unit.set_hud_active(false)
 
