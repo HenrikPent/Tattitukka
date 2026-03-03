@@ -13,8 +13,8 @@ enum CaliberType { CAL_127mm, CAL_280mm, CAL_406mm }
 var caliber_settings = {
 	CaliberType.CAL_127mm: {
 		"projectile_type": "127mm",
-		"speed": 150.0,
-		"gravity": 29.81,
+		"speed": 270.0,
+		"gravity": 15, #tämä määritelään ammuksen skenessä ammukselle
 		"yaw_speed": 40.0,
 		"pitch_speed": 30.0,
 		"up_max": 75.0,
@@ -32,7 +32,7 @@ var caliber_settings = {
 	CaliberType.CAL_406mm: {
 		"projectile_type": "406mm",
 		"speed": 150.0,
-		"gravity": 12.0,
+		"gravity": 9.81,
 		"yaw_speed": 5.0,
 		"pitch_speed": 5.0,
 		"up_max": 45.0,
@@ -42,7 +42,9 @@ var caliber_settings = {
 
 @export_group("Turret Settings")
 @export var forbidden_width: float = 60.0 # kielletyn sektorin leveys asteina (puolet kummallekin puolelle)
-var rest_yaw: float = 0.0        # lepoasento asteina, 0 = keula, 180 = perä
+var rest_yaw: float:
+	get:
+		return 0.0 if is_front else 180.0# lepoasento asteina, 0 = keula, 180 = perä
 
 # Sisäiset muuttujat
 var is_player_controlled: bool = true
@@ -104,18 +106,42 @@ func _process_player(delta: float) -> void:
 	if Input.is_action_just_pressed("aim_target"):  # oikea hiiri
 		_try_set_ai_target(aim_pos)
 
+func release_to_ai() -> void:
+	if is_player_controlled:
+		is_player_controlled = false
+		attack_target = null
+		print("[Turret:%s] Paluu AI-hallintaan" % name)
+
+
 func _process_ai(delta: float) -> void:
-	if not attack_target:
+	var effective_target = attack_target
+	
+	# Pelaaja voi ottaa kontrollin oikealla hiirella JOS hän hallitsee laivaa
+	if Input.is_action_just_pressed("aim_target"):
+		print("[Turret:%s] Pelaaja yritti kontrollin" % name)
+		var ship = get_parent()
+		if ship and ship == UnitManager.controlled_unit and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			is_player_controlled = true
+			print("[Turret:%s] Pelaaja otti kontrollin" % name)
+	
+	# Validoi target (ei kuollut, ei uppoava)
+	if is_instance_valid(effective_target) and "team_id" in effective_target:
+		if effective_target.team_id == 0:
+			effective_target = null
+			attack_target = null
+	
+	# Jos maalia ei ole, ei tehdä mitään
+	if not is_instance_valid(effective_target):
+		_return_to_rest(delta)
 		return
 
-	var aim_pos = attack_target.global_position
+	# Tähdätään kohteeseen
+	var aim_pos = _get_predicted_aim_position(effective_target)
 	_rotate_towards(aim_pos, delta)
 	
-	 # katotaan myös AI ohajuksen aikana jotta hallinta voidaan saada takaisin
-	if Input.is_action_just_pressed("aim_target"):
-		var mouse_aim = _get_aim_position()  # ← hiiren osoittama paikka
-		_try_set_ai_target(mouse_aim)
-
+	# AI-ampuminen
+	if is_aim_ready:
+		fire_muzzle()
 
 func _try_set_ai_target(aim_pos: Vector3) -> void:
 	var space = get_world_3d().direct_space_state
@@ -145,6 +171,14 @@ func _try_set_ai_target(aim_pos: Vector3) -> void:
 		is_player_controlled = true
 		print("[Turret:%s] Pelaaja ottaa kontrollin" % name)
 
+# laiva kutsuu tätä kun se saa uuden targetin
+func set_turret_target(target: Node3D) -> void:
+	if is_instance_valid(target):
+		attack_target = target
+		is_player_controlled = false
+		print("[Turret:%s] Laiva antoi targetin: %s" % [name, target.name])
+	else:
+		attack_target = null
 
 
 # --- TÄHTÄYS ---
@@ -262,16 +296,83 @@ func _rotate_towards(target_pos: Vector3, delta: float) -> void:
 
 
 func _calc_ballistic_pitch(x: float, y: float) -> float:
-	# Klassinen ballistinen kaava, matala kulma
-	var v  = projectile_speed
-	var g  = gravity
-	var v2 = v * v
-	var discriminant = v2 * v2 - g * (g * x * x + 2.0 * y * v2)
+	var v = projectile_speed
+	var g = gravity
 	
-	if discriminant >= 0.0:
-		return atan((v2 - sqrt(discriminant)) / (g * x))
-	else:
-		return deg_to_rad(45.0)  # Kantama ylitetty → maksimikanta
+	if x <= 0.001:
+		return 0.0
+	
+	var v2 = v * v
+	
+	var root = v2 * v2 - g * (g * x * x + 2.0 * y * v2)
+	
+	if root < 0.0:
+		return 0.0  # ei kantamaa
+	
+	var sqrt_root = sqrt(root)
+	
+	# MATALA KAARI
+	var angle = atan2(v2 - sqrt_root, g * x)
+	
+	return angle
+
+func _get_predicted_aim_position(target: Node3D) -> Vector3:
+	var predicted_pos = target.global_position
+	
+	# 1. Haetaan kohteen nopeus ja kääntymisnopeus turvallisesti
+	var t_speed: float = target.get("current_speed") if "current_speed" in target else 0.0
+	
+	var t_turn_rate: float = 0.0
+	# Lasketaan kääntymisnopeus (rad/s). Oletetaan, että laiva kääntyy: steering * turn_speed
+	if "current_steering_output" in target and "turn_speed" in target:
+		t_turn_rate = target.current_steering_output * target.turn_speed
+	elif "sync_steering_index" in target and "steering_levels" in target and "turn_speed" in target:
+		# Fallback, jos current_steering_output ei ole ehtinyt päivittyä
+		var steer_idx = target.sync_steering_index
+		t_turn_rate = target.steering_levels[steer_idx] * target.turn_speed
+		
+	var tof := 0.0
+	
+	# 2. Iteroidaan 3 kertaa tarkemman osumapisteen löytämiseksi
+	for iteration in 3:
+		var diff = predicted_pos - gun.global_transform.origin
+		var horiz_dist = Vector2(diff.x, diff.z).length()
+		
+		# Haetaan arvioitu lentoaika nykyiseen ennakkopisteeseen
+		tof = _estimate_flight_time(horiz_dist, diff.y)
+		
+		# 3. Simuloidaan kohteen liike lentoajan yli (XZ-taso)
+		predicted_pos = target.global_position
+		var sim_yaw = target.global_rotation.y
+		
+		# Jaetaan simulointi askeleisiin (esim. 10), jotta kaarrostarkkuus pysyy hyvänä
+		var steps = 10
+		var dt = tof / float(steps)
+		
+		for i in steps:
+			sim_yaw += t_turn_rate * dt
+			# Oletetaan, että laivan keula on Godotin -Z suunta (Vector3.FORWARD)
+			var forward = Vector3.FORWARD.rotated(Vector3.UP, sim_yaw)
+			predicted_pos += forward * t_speed * dt
+			
+	return predicted_pos
+
+func _estimate_flight_time(x: float, y: float) -> float:
+	# Käytetään olemassa olevaa funktiotasi pitchin hakuun
+	var pitch = _calc_ballistic_pitch(x, y)
+	
+	if x <= 0.001:
+		return 0.0
+		
+	# Ammuksen vaakanopeus: v_x = v * cos(pitch)
+	var v_xz = projectile_speed * cos(pitch)
+	
+	if v_xz == 0.0:
+		return 0.0
+		
+	# Lentoaika = matka / vaakanopeus
+	return x / v_xz
+
 
 
 # --- DEBUG: tulostaa mille unitille tähtätään ---
@@ -323,3 +424,22 @@ func fire_muzzle() -> void:
 				muzzle.action_fire(shooter_id)
 		elif muzzle.has_method("action_fire"):
 			muzzle.action_fire(shooter_id)
+
+
+func _return_to_rest(delta: float) -> void:
+	var ship = get_parent()
+	if not ship:
+		return
+	
+	# Tavoite: rest_yaw asteen suhteessa laivaan
+	var target_yaw = ship.global_rotation.y + deg_to_rad(rest_yaw)
+	
+	# Kääntyminen lepoasentoon
+	var yaw_diff = wrapf(target_yaw - global_rotation.y, -PI, PI)
+	var step = deg_to_rad(yaw_speed * delta)
+	global_rotation.y += clamp(yaw_diff, -step, step)
+	
+	# Piippu nollaan
+	var p_diff = 0.0 - gun.rotation.x
+	var p_step = deg_to_rad(pitch_speed * delta)
+	gun.rotation.x += clamp(p_diff, -p_step, p_step)

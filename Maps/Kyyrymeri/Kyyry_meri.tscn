@@ -232,7 +232,7 @@ script = ExtResource("2_ei5om")
 [node name="SpawnPoints" type="Node3D" parent="." unique_id=65579339]
 
 [node name="Spawn_T1" type="Marker3D" parent="SpawnPoints" unique_id=565182588]
-transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 2000, 0, 2000)
+transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 1015.1531, 0, 1015.7461)
 
 [node name="Spawn_T2" type="Marker3D" parent="SpawnPoints" unique_id=1633394345]
 transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.70710677, 2000, 0, -2000)
@@ -241,11 +241,10 @@ transform = Transform3D(-0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, -0.
 transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, -2000, 4, -2000)
 
 [node name="Spawn_T4" type="Marker3D" parent="SpawnPoints" unique_id=82662847]
-transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, -2000, 0, 2000)
+transform = Transform3D(0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, 0.70710677, -876.0627, 0, 1259.2168)
 
 [node name="DEBUG NUOLI" type="MeshInstance3D" parent="." unique_id=440998543]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 497.00717, 189.20233)
-visible = false
 mesh = SubResource("CylinderMesh_4ulqp")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="DEBUG NUOLI" unique_id=1102160287]

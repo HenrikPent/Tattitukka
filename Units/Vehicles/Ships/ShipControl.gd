@@ -4,8 +4,6 @@ extends CharacterBody3D # Käytetään CharacterBodya, se on vakaampi multiplaye
 #auktoriteetin vaihtoa varten
 var authority_cooldown := 0.0
 
-
-
 @export_group("Camera Settings")
 @export var cam_mode_fixed: bool = false
 @export var cam_offset := Vector3(0, 70, 0)
@@ -56,9 +54,14 @@ var current_speed := 0.0
 var is_sinking := false
 
 # --- AI-MUUTTUJAT ---
+enum AIState { IDLE, ATTACK, FOLLOW, NAVIGATE }
+var current_ai_state: AIState = AIState.IDLE
+var previous_ai_state: AIState = AIState.IDLE
 var ai_target_pos = null # Käytetään nullia oletuksena (Variant-tyyppi)
 var follow_target: Node3D = null
 var attack_target: Node3D = null # UUSI: Kohde jota kohti hyökätään
+
+
 var formation_offset := Vector3.ZERO # Paikka suhteessa johtajaan
 @export var formation_grid_size := 40.0 # Etäisyys "yksiköiden" välillä
 
@@ -89,6 +92,12 @@ func _on_authority_changed(_new_auth: int): # Lisätty alaviiva (_) varoituksen 
 	var sync = get_node_or_null("MultiplayerSynchronizer")
 	if sync:
 		sync.set_multiplayer_authority(_new_auth)
+
+func release_turrets_to_ai() -> void:
+	for child in get_children():
+		if child.has_method("release_to_ai"):
+			child.release_to_ai()
+	print("[Ship:%s] Tykit palautettu AI-hallintaan" % name)
 
 
 func set_hud_active(active: bool):
@@ -149,40 +158,62 @@ func _change_steering(direction: float):
 
 
 func _run_ai_logic() -> void:
-	# 1. HYÖKKÄYS (Korkein prioriteetti)
-	if is_instance_valid(attack_target):
-		attack_ship()
-		return
-
-	# 2. SEURANTA
-	if is_instance_valid(follow_target):
-		var rotated_offset = follow_target.global_transform.basis * formation_offset
-		var leader_target_pos = follow_target.global_position + rotated_offset
-		var dist_to_formation_spot = global_position.distance_to(leader_target_pos)
-		
-		# Tarkistetaan onko johtaja pysähtynyt (vauhti-indeksi 2 = STOP)
-		var leader_is_stopped = follow_target.get("sync_speed_index") == 2
-		
-		# Jos johtaja on pysähtynyt JA ollaan jo lähellä omaa paikkaa (100m)
-		if leader_is_stopped and dist_to_formation_spot < 100.0:
-			sync_speed_index = 2      # STOP
-			sync_steering_index = 3   # MIDSHIPS
-		else:
-			# Muuten ajetaan normaalisti kohti muodostelmapaikkaa
-			_drive_towards(leader_target_pos)
-		return
-
-	# 3. PISTEESEEN AJAMINEN
-	if ai_target_pos != null:
-		var dist_to_target = global_position.distance_to(ai_target_pos)
-		if dist_to_target < 100.0:
-			ai_target_pos = null
-			sync_speed_index = 2 # STOP
-			sync_steering_index = 3 # MIDSHIPS
-		else:
-			_drive_towards(ai_target_pos)
+	# Tarkistetaan prioriteetti ja vaihdetaan tila tarvittaessa
+	if is_instance_valid(attack_target) and attack_target.team_id != 0:
+		current_ai_state = AIState.ATTACK
+	elif is_instance_valid(follow_target):
+		current_ai_state = AIState.FOLLOW
+	elif ai_target_pos != null:
+		current_ai_state = AIState.NAVIGATE
 	else:
+		current_ai_state = AIState.IDLE
+	
+	# Jos tila muuttui ATTACK:sta pois, vapaa tykit
+	if previous_ai_state == AIState.ATTACK and current_ai_state != AIState.ATTACK:
+		clear_turrets_target()
+	
+	previous_ai_state = current_ai_state
+	
+	# Suorita tila
+	match current_ai_state:
+		AIState.IDLE:
+			_ai_idle()
+		AIState.ATTACK:
+			_ai_attack()
+		AIState.FOLLOW:
+			_ai_follow()
+		AIState.NAVIGATE:
+			_ai_navigate()
+
+
+func _ai_idle() -> void:
+	sync_steering_index = 3 # MIDSHIPS
+	sync_speed_index = 2    # STOP
+
+func _ai_attack() -> void:
+	attack_ship()
+
+func _ai_follow() -> void:
+	var rotated_offset = follow_target.global_transform.basis * formation_offset
+	var leader_target_pos = follow_target.global_position + rotated_offset
+	var dist_to_formation_spot = global_position.distance_to(leader_target_pos)
+	
+	var leader_is_stopped = follow_target.get("sync_speed_index") == 2
+	
+	if leader_is_stopped and dist_to_formation_spot < 100.0:
+		sync_speed_index = 2
 		sync_steering_index = 3
+	else:
+		_drive_towards(leader_target_pos)
+
+func _ai_navigate() -> void:
+	var dist_to_target = global_position.distance_to(ai_target_pos)
+	if dist_to_target < 100.0:
+		ai_target_pos = null
+		sync_speed_index = 2
+		sync_steering_index = 3
+	else:
+		_drive_towards(ai_target_pos)
 
 # Apufunktio ohjaamiseen (Päivitetty peruutuslogiikalla)
 func _drive_towards(target: Vector3):
@@ -239,6 +270,20 @@ func set_attack_target(target: Node3D):
 	follow_target = null
 	ai_target_pos = null
 	is_player_controlled = false
+
+	# Päivitä kaikki tykit
+	_update_turrets_target(target)
+
+func _update_turrets_target(target: Node3D) -> void:
+	for child in get_children():
+		if child.has_method("set_turret_target"):
+			child.set_turret_target(target)
+
+func clear_turrets_target() -> void:
+	for child in get_children():
+		if child.has_method("set_turret_target"):
+			child.set_turret_target(null)
+	print("[Ship:%s] Tykkien targetit nollattu" % name)
 
 
 func set_follow_target(target: Node3D):
@@ -366,14 +411,14 @@ func attack_ship() -> void:
 			
 		sync_speed_index = 4 # Taistelunopeus
 
-
+@rpc("any_peer", "call_local", "reliable")
 func start_sinking():
 	if is_sinking: return # Estetään moninkertainen kutsu
 	is_sinking = true
 	# Jos tämä oli pelaajan hallitsema laiva, vapautetaan kamera
 	if UnitManager.controlled_unit == self:
 		UnitManager.controlled_unit = null 
-		# Tässä kohtaa kannattaa piilottaa HUD
+		# piilottaa HUD
 		set_hud_active(false)
 
 

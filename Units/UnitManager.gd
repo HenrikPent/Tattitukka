@@ -54,11 +54,14 @@ func _perform_switch(player_id: int, new_unit: Node3D):
 func _update_controlled_unit_list(p_id: int, u_path: NodePath):
 	var unit = get_node_or_null(u_path)
 	
-	# --- HUDIN SAMMUTUS (Vanha unitti) ---
-	# Jos vaihdat yksikköä, sammutetaan nykyinen HUD
+	# --- MUUTOKSET VANHALLE UNITILLE ---
 	if p_id == multiplayer.get_unique_id() or p_id == 0:
 		if is_instance_valid(controlled_unit):
+			# Jos vaihdat yksikköä, sammutetaan nykyinen HUD
 			controlled_unit.set_hud_active(false)
+			#jos sillä on turretteja, annetaan ne AI:lle
+			if controlled_unit.has_method("release_turrets_to_ai"):
+				controlled_unit.release_turrets_to_ai()
 	
 	# --- UNIT LISTAN SIIVOUS ---
 	var dead_ids = []

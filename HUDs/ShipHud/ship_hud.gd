@@ -80,21 +80,16 @@ func _update_mode_label(ship_ref: Node3D) -> void:
 		mode_label.text = "ON"
 		mode_label.modulate = Color.LIME_GREEN # Syaani kun AI ajaa
 
-# Uusi funktio, joka päättelee AI:n tilan ship-muuttujista
+# AI:n tila ship-muuttujasta
 func _update_ai_status_label(ship_ref: Node3D) -> void:
-	if not current_task: return
+	if not current_task or not ship_ref: return
 	
-	var status_text = "AUTOPILOT: STANDBY" # Oletus
+	if not "current_ai_state" in ship_ref:
+		return
 	
-	if is_instance_valid(ship_ref.get("attack_target")):
-		status_text = "ENGAGING TARGET"
-	elif is_instance_valid(ship_ref.get("follow_target")):
-		status_text = "FOLLOWING LEADER"
-	elif ship_ref.get("ai_target_pos") != null:
-		status_text = "NAVIGATING"
-	elif ship_ref.get("sync_speed_index") == 2: # STOP
-		status_text = "IDLE"
-
+	var state_names = ["IDLE", "ENGAGING TARGET", "FOLLOWING LEADER", "NAVIGATING"]
+	var status_text = state_names[ship_ref.current_ai_state]
+	
 	current_task.text = status_text
 
 
