@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dpl83ijhk51jc" path="res://Units/Vehicles/Planes/FighterV1/figter_v_1_controls.gd" id="1_i7mby"]
 [ext_resource type="PackedScene" uid="uid://cdso8vcldx6e" path="res://Units/Vehicles/Planes/FighterV1/FighterV1_proto.glb" id="2_i7mby"]
 [ext_resource type="Script" uid="uid://2s8fr0xybxc4" path="res://Units/Vehicles/Planes/FighterV1/FighterPropeller.gd" id="3_htp35"]
-[ext_resource type="PackedScene" uid="uid://bf67wslmstlfe" path="res://HUDs/PlaneHUD/plane_hud.tscn" id="4_lsgye"]
+[ext_resource type="PackedScene" uid="uid://bf67wslmstlfe" path="res://HUDs/PlaneHUD/PlaneHUD.tscn" id="4_lsgye"]
 
 [sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qq0nq"]
 properties/0/path = NodePath(".:sync_thrust")
@@ -35,6 +35,7 @@ transform = Transform3D(1, 0, 1.7484555e-07, 0, 1, 0, -1.7484555e-07, 0, 1, 0, 0
 collision_layer = 8
 collision_mask = 31
 script = ExtResource("1_i7mby")
+cam_far_dist = 30.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="." unique_id=169410675]
 replication_config = SubResource("SceneReplicationConfig_qq0nq")

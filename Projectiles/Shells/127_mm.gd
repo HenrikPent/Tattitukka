@@ -1,3 +1,4 @@
+#projectile 127mm
 extends Area3D
 
 var velocity := Vector3.ZERO

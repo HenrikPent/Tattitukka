@@ -219,13 +219,13 @@ func _highlight_selected_icon():
 	# Nollataan muiden värit ensin (valinnainen, jos haluat vain yhden kerrallaan)
 	for unit in icon_map.keys():
 		var icon = icon_map[unit]
-		# Palautetaan perusväri (tämä on vähän purkka-ratkaisu, 
-		# parempi olisi tallentaa alkuperäinen väri)
-		if unit.get("team_id") == multiplayer.get_unique_id():
-			icon.color = Color.CYAN
-		else:
-			icon.color = Color.RED
-			
+		
+		if is_instance_valid(unit):
+			if unit.get("team_id") == multiplayer.get_unique_id():
+				icon.color = Color.CYAN
+			else:
+				icon.color = Color.RED
+	
 	# Korostetaan valittu
 	if selected_unit and icon_map.has(selected_unit):
 		icon_map[selected_unit].color = Color.WHITE
@@ -260,37 +260,38 @@ func _draw():
 	var my_id = multiplayer.get_unique_id()
 
 	for unit in icon_map.keys():
-		if not is_instance_valid(unit): continue
+		# Tarkistetaan itse yksikkö
+		if not is_instance_valid(unit) or not unit.is_inside_tree(): 
+			continue
 		
-		if unit.get("team_id") == 0: continue
-		
-		if unit.get("team_id") != my_id: continue
+		if unit.get("team_id") == 0 or unit.get("team_id") != my_id: 
+			continue
 
 		var start_pos = world_to_map(unit.global_position)
 		var end_pos: Vector2
 		var line_color: Color
-		var has_line := false # Lippu, jolla katsotaan piirretäänkö jotain
+		var has_line := false
 
-		# 1. SEURANTA (Ensisijainen)
-		if is_instance_valid(unit.get("follow_target")):
-			end_pos = world_to_map(unit.follow_target.global_position)
+		# 1. SEURANTA
+		var f_target = unit.get("follow_target")
+		if is_instance_valid(f_target) and f_target.is_inside_tree():
+			end_pos = world_to_map(f_target.global_position)
 			line_color = Color.GREEN_YELLOW
 			has_line = true
 			
-		# 2. LIIKKUMINEN (TARKISTETTU RIVI)
-		# Käytetään pelkkää 'unit.ai_target_pos', koska se on tosi vain jos se ei ole null
+		# 2. LIIKKUMINEN (Target pos on vain Vector3, ei node, joten se on turvallinen)
 		elif unit.get("ai_target_pos") != null:
 			end_pos = world_to_map(unit.ai_target_pos)
 			line_color = Color.GRAY
 			has_line = true
 			
 		# 3. HYÖKKÄÄMINEN
-		elif is_instance_valid(unit.get("attack_target")):
-			end_pos = world_to_map(unit.attack_target.global_position)
+		var a_target = unit.get("attack_target")
+		if is_instance_valid(a_target) and a_target.is_inside_tree():
+			end_pos = world_to_map(a_target.global_position)
 			line_color = Color.RED
 			has_line = true
 
-		# Piirretään vain jos joku ehto täyttyi
 		if has_line:
 			draw_line(start_pos, end_pos, line_color, 2.0, true)
 			draw_circle(end_pos, 3.0, line_color)

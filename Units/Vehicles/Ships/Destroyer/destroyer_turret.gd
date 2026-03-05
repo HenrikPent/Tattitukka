@@ -92,19 +92,30 @@ func _process_player(delta: float) -> void:
 	if get_parent() != UnitManager.controlled_unit:
 		return
 
-	var aim_pos = _get_aim_position()
+	# HAETAAN VALMIS DATA KAMERALTA (Ei enää RayCasteja tässä!)
+	var aim_pos = CameraData.hit_position
+	var hit_unit = CameraData.hit_node
+	
 	if aim_pos == Vector3.ZERO:
 		return
 
-	#_debug_unit_under_aim(aim_pos)
+	# Käännetään torni kohti pistettä
 	_rotate_towards(aim_pos, delta)
 
+	# Ampuminen (vain jos hiiri on kaapattu tai UI:n päällä ei olla)
 	if Input.is_action_pressed("fire") and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
 		fire_muzzle()
 
-	# Oikea hiiri — vaihda AI/pelaaja kontrolli
-	if Input.is_action_just_pressed("aim_target"):  # oikea hiiri
-		_try_set_ai_target(aim_pos)
+	# AI-lukitus: Jos katsot unittia ja painat oikeaa hiirtä
+	if Input.is_action_just_pressed("aim_target"):
+		if hit_unit and hit_unit.is_in_group("Units"):
+			attack_target = hit_unit
+			is_player_controlled = false
+			print("[Turret:%s] AI lukittu kohteeseen: %s" % [name, hit_unit.name])
+		else:
+			# Jos klikataan tyhjää merta, vapautetaan AI-lukitus (valinnainen)
+			attack_target = null
+			is_player_controlled = true
 
 func release_to_ai() -> void:
 	if is_player_controlled:
@@ -114,32 +125,42 @@ func release_to_ai() -> void:
 
 
 func _process_ai(delta: float) -> void:
-	var effective_target = attack_target
-	
-	# Pelaaja voi ottaa kontrollin oikealla hiirella JOS hän hallitsee laivaa
+	# 1. MAHDOLLISTA UUDEN KOHTEEN VALINTA SUORAAN LEVOSTA
 	if Input.is_action_just_pressed("aim_target"):
-		print("[Turret:%s] Pelaaja yritti kontrollin" % name)
 		var ship = get_parent()
-		if ship and ship == UnitManager.controlled_unit and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
-			is_player_controlled = true
-			print("[Turret:%s] Pelaaja otti kontrollin" % name)
-	
-	# Validoi target (ei kuollut, ei uppoava)
-	if is_instance_valid(effective_target) and "team_id" in effective_target:
-		if effective_target.team_id == 0:
-			effective_target = null
-			attack_target = null
-	
-	# Jos maalia ei ole, ei tehdä mitään
-	if not is_instance_valid(effective_target):
+		if ship == UnitManager.controlled_unit and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			var hit_unit = CameraData.hit_node
+			
+			if is_instance_valid(hit_unit) and hit_unit.is_in_group("Units"):
+				# LUKITSE UUSI KOHDE: Tykki aktivoituu levosta välittömästi
+				attack_target = hit_unit
+				is_player_controlled = false
+				print("[Turret:%s] Uusi kohde lukittu levosta: %s" % [name, hit_unit.name])
+				return 
+			else:
+				# JOS KLIKATAAN TYHJÄÄ: Palataan pelaajahallintaan (seuraa hiirtä)
+				is_player_controlled = true
+				attack_target = null
+				print("[Turret:%s] Palattu manuaaliohjaukseen" % name)
+				return
+
+	# 2. VALIDOI NYKYINEN KOHDE
+	var target_valid = is_instance_valid(attack_target)
+	if target_valid:
+		# Jos laiva uppoaa tai se on merkitty tuhoutuneeksi
+		if attack_target.get("is_sinking") == true:
+			target_valid = false
+
+	# 3. JOS EI KOHDETTA -> LEPOASENTO
+	if not target_valid:
+		attack_target = null
 		_return_to_rest(delta)
 		return
 
-	# Tähdätään kohteeseen
-	var aim_pos = _get_predicted_aim_position(effective_target)
+	# 4. JOS ON KOHDE -> TÄHTÄÄ ENNAKOLLA
+	var aim_pos = _get_predicted_aim_position(attack_target)
 	_rotate_towards(aim_pos, delta)
 	
-	# AI-ampuminen
 	if is_aim_ready:
 		fire_muzzle()
 
@@ -169,7 +190,6 @@ func _try_set_ai_target(aim_pos: Vector3) -> void:
 	else:
 		attack_target = null
 		is_player_controlled = true
-		print("[Turret:%s] Pelaaja ottaa kontrollin" % name)
 
 # laiva kutsuu tätä kun se saa uuden targetin
 func set_turret_target(target: Node3D) -> void:

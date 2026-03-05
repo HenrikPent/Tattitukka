@@ -21,11 +21,14 @@ func _on_hit_received(area: Area3D):
 			
 		take_damage(50.0, area.global_position)
 
-func take_damage(amount: float, hit_pos: Vector3):
+func take_damage(amount: float, hit_pos: Vector3, incoming_shooter_id: int = -1):
+	# Nyt voit käyttää incoming_shooter_id:tä tarkistukseen
+	if incoming_shooter_id != -1 and incoming_shooter_id == ship_owner_id:
+		return
+		
 	current_health -= amount
 	print(get_parent().name, " HP: ", current_health, " / ", max_health)
 	
-	# Tarkistetaan erikoisvauriot moduuleille osumakohdan perusteella
 	check_module_damage(hit_pos)
 	
 	if current_health <= 0:

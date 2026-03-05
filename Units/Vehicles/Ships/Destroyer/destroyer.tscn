@@ -67,11 +67,11 @@ size = Vector3(16, 5, 92)
 [sub_resource type="BoxShape3D" id="BoxShape3D_yne8w"]
 size = Vector3(14, 7, 43)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dg6dm"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rdg3a"]
 albedo_color = Color(0.15487596, 0.154876, 0.15487596, 1)
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_0enge"]
-material = SubResource("StandardMaterial3D_dg6dm")
+material = SubResource("StandardMaterial3D_rdg3a")
 top_radius = 1.0
 bottom_radius = 1.0
 height = 15.0
@@ -99,7 +99,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 40.375847, -8.356059)
 mesh = SubResource("CylinderMesh_d2w44")
 script = ExtResource("5_rdg3a")
 
-[node name="Physics collider" type="CollisionShape3D" parent="." unique_id=616247942]
+[node name="PhysicsCollider" type="CollisionShape3D" parent="." unique_id=616247942]
 shape = SubResource("BoxShape3D_71o2c")
 
 [node name="HitBox" type="Area3D" parent="." unique_id=1816947858]
@@ -119,9 +119,9 @@ shape = SubResource("BoxShape3D_rdg3a")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 25, 7)
 shape = SubResource("BoxShape3D_yne8w")
 
-[node name="TurretManager" type="Node3D" parent="." unique_id=375701129 node_paths=PackedStringArray("guns")]
+[node name="TurretManager" type="Node3D" parent="." unique_id=375701129 node_paths=PackedStringArray("muzzles")]
 script = ExtResource("3_i4px2")
-guns = [NodePath("../Turret1/Gun/Muzzle1"), NodePath("../Turret1/Gun/Muzzle2"), NodePath("../Turret2/Gun/Muzzle1"), NodePath("../Turret2/Gun/Muzzle2"), NodePath("../Turret3/Gun/Muzzle1"), NodePath("../Turret3/Gun/Muzzle2"), NodePath("../Turret4/Gun/Muzzle1"), NodePath("../Turret4/Gun/Muzzle2")]
+muzzles = [NodePath("../Turret1/Gun/Muzzle1"), NodePath("../Turret1/Gun/Muzzle2"), NodePath("../Turret2/Gun/Muzzle1"), NodePath("../Turret2/Gun/Muzzle2"), NodePath("../Turret3/Gun/Muzzle1"), NodePath("../Turret3/Gun/Muzzle2"), NodePath("../Turret4/Gun/Muzzle1"), NodePath("../Turret4/Gun/Muzzle2")]
 
 [node name="Turret1" parent="." unique_id=331245451 node_paths=PackedStringArray("gun", "muzzles") instance=ExtResource("2_6dt7c")]
 transform = Transform3D(-0.64769447, 0, 0.7619, 0, 1, 0, -0.7619, 0, -0.64769447, 0, 11, -26)

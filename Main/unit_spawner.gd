@@ -6,6 +6,7 @@ extends Node
 	"destroyer": preload("res://Units/Vehicles/Ships/Destroyer/destroyer.tscn"),
 	"fighter": preload("res://Units/Vehicles/Planes/FighterV1/figterV1.tscn"),
 	"carrier": preload("res://Units/Vehicles/Ships/Carrier/Carrier.tscn"),
+	"submarine": preload("res://Units/Vehicles/Submarine/submarine.tscn"),
 	"rifleman": preload("res://Units/Soldiers/Rifleman/Rifleman.tscn")
 	}
 """

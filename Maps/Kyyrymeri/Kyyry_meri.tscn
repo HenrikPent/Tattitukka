@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://ch0ickhsmyf2o"]
 
+[ext_resource type="Script" uid="uid://cyswq24cuuxh3" path="res://Maps/Kyyrymeri/water_fog.gd" id="1_4ulqp"]
 [ext_resource type="Script" uid="uid://ckaq3pi3tse83" path="res://Maps/Kyyrymeri/sea_floor.gd" id="1_7mrgk"]
 [ext_resource type="Script" uid="uid://dd6vd3lo6ei77" path="res://Maps/Kyyrymeri/MapManager.gd" id="2_ei5om"]
 
@@ -33,6 +34,9 @@ volumetric_fog_albedo = Color(0.39027527, 0.5959114, 1, 1)
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_8ud2x"]
 
 [sub_resource type="Compositor" id="Compositor_sudar"]
+
+[sub_resource type="FogMaterial" id="FogMaterial_ei5om"]
+albedo = Color(0.0046517407, 0.22864747, 0.92482316, 1)
 
 [sub_resource type="Shader" id="Shader_txha6"]
 code = "// NOTE: Shader automatically converted from Godot Engine 4.6.stable's StandardMaterial3D.
@@ -207,6 +211,13 @@ environment = SubResource("Environment_chin5")
 camera_attributes = SubResource("CameraAttributesPractical_8ud2x")
 compositor = SubResource("Compositor_sudar")
 
+[node name="WaterFog" type="FogVolume" parent="WorldEnvironment" unique_id=888922897 groups=["WaterFogGroup"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -23.663452, 0)
+size = Vector3(200, 100, 200)
+shape = 2
+material = SubResource("FogMaterial_ei5om")
+script = ExtResource("1_4ulqp")
+
 [node name="Water" type="StaticBody3D" parent="." unique_id=769043748]
 collision_mask = 0
 
@@ -218,13 +229,20 @@ mesh = SubResource("PlaneMesh_8ud2x")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -40, 0)
 shape = SubResource("BoxShape3D_7mrgk")
 
+[node name="SeaSurface2" type="MeshInstance3D" parent="Water" unique_id=1981660733]
+transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 0, 0, 0)
+lod_bias = 0.001
+mesh = SubResource("PlaneMesh_8ud2x")
+
 [node name="OceanFloor" type="StaticBody3D" parent="." unique_id=1916192553]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -80, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -100, 0)
 
 [node name="Floor" type="CollisionShape3D" parent="OceanFloor" unique_id=2125631870]
 
-[node name="Mesh" type="MeshInstance3D" parent="OceanFloor/Floor" unique_id=171632995]
+[node name="Mesh" type="MeshInstance3D" parent="OceanFloor" unique_id=171632995]
 script = ExtResource("1_7mrgk")
+slope_start = 0.8
+plateau_start = 1.0
 
 [node name="MapManager" type="Node3D" parent="." unique_id=522847959]
 script = ExtResource("2_ei5om")

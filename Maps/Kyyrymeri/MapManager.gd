@@ -83,7 +83,16 @@ func spawn_initial_units(player_ids: Array):
 		# Asetetaan hallinta ensisijaisesti Carrieriin
 		if carrier_unit:
 			first_unit = carrier_unit
-
+	
+		# --- 2. SUBMARINE ---
+		var submarine_name = "submarine_" + str(p_id)
+		# Carrier hieman taakse (Z-akselilla negatiivinen luku on usein taaksepäin Godotissa)
+		var submarine_offset = q * Vector3(150, 0, -150.0)
+		var submarine_pos = base_pos + submarine_offset
+		
+		var _submarine_unit = UnitSpawner.spawn_unit("submarine", p_id, submarine_pos, submarine_name, base_rot)
+		
+		
 		# --- 3. HALLINNAN ASSETUS ---
 		# AI (ID -1) ei tarvitse kameran vaihtoa
 		if first_unit and p_id != -1:

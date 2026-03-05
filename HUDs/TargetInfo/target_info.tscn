@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://gsj3uv5r1bon"]
+
+[ext_resource type="Script" uid="uid://3ivtx6ubc5ct" path="res://HUDs/TargetInfo/target_info.gd" id="1_2we0x"]
+
+[node name="TargetInfo" type="Control" unique_id=2015264043]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_2we0x")
+
+[node name="Frame" type="TextureRect" parent="." unique_id=641477954]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+expand_mode = 1
+
+[node name="TargetInfo" type="Label" parent="." unique_id=693832903]
+layout_mode = 0
+offset_left = 526.0
+offset_top = 416.0
+offset_right = 644.0
+offset_bottom = 465.0
+text = "testi
+"
+horizontal_alignment = 1
