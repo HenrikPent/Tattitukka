@@ -50,6 +50,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			_handle_zoom_change()
 
 func _process(delta: float) -> void:
+	# VAIN paikallinen pelaaja saa säätää kameraansa
+	if not get_parent().is_multiplayer_authority():
+		return
+	
 	var active_unit = UnitManager.controlled_unit
 	
 	if active_unit != controlled_unit:

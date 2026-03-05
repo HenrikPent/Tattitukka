@@ -52,6 +52,7 @@ var acceleration := 5.0
 var current_speed := 0.0
 
 var is_sinking := false
+var current_sink_speed := 0.0
 
 # --- AI-MUUTTUJAT ---
 enum AIState { IDLE, ATTACK, FOLLOW, NAVIGATE }
@@ -72,8 +73,9 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	if is_sinking:
-		global_position.y -= 5.0 * delta
-		rotation.z += 0.05 * delta 
+		_apply_sinking(delta)
+		# Jatka liikkumista (hidastuu kohti nollaa tai pysyy ohjattuna AI:lla hetken)
+		_apply_movement(delta)
 		return
 
 	if is_multiplayer_authority():
@@ -411,15 +413,43 @@ func attack_ship() -> void:
 			
 		sync_speed_index = 4 # Taistelunopeus
 
+# UUSI: Uppoamislogiikka
+func _apply_sinking(delta: float) -> void:
+	# 1. Pystysuora uppoaminen kiihdytyksellä
+	# Tavoitenopeus esim. 5.0, kiihdytys sama kuin laivalla (tai oma)
+	current_sink_speed = move_toward(current_sink_speed, 5.0, acceleration * 0.2 * delta)
+	global_position.y -= current_sink_speed * delta
+	
+	# 2. Kallistuminen (Z-akseli)
+	rotation.z += 0.05 * delta 
+
 @rpc("any_peer", "call_local", "reliable")
 func start_sinking():
-	if is_sinking: return # Estetään moninkertainen kutsu
+	if is_sinking: return 
 	is_sinking = true
-	# Jos tämä oli pelaajan hallitsema laiva, vapautetaan kamera
+	
+	# --- ASETETAAN LOPPUTILA ---
+	sync_speed_index = 2 # STOP (Nopeus alkaa laskea accelerationin mukaan)
+	
+	# Peräsimen asettaminen pyyntösi mukaan:
+	# Jos > 3 (Oikealle), asetetaan 4 (Pieni oikealle)
+	# Jos < 3 (Vasemmalle), asetetaan 2 (Pieni vasemmalle)
+	# Jos 3, pysyy 3:ssa.
+	if sync_steering_index < 3:
+		sync_steering_index = 2
+	elif sync_steering_index > 3:
+		sync_steering_index = 4
+	
+	# Vapautetaan kamera ja poistetaan hallinta
+	is_player_controlled = false
 	if UnitManager.controlled_unit == self:
 		UnitManager.controlled_unit = null 
-		# piilottaa HUD
 		set_hud_active(false)
+	
+	# Ryhmämuutokset (estää muita tekoälyjä hyökkäämästä hylkyyn)
+	if is_in_group("Units"):
+		remove_from_group("Units")
+	add_to_group("Sinking")
 
 
 func set_team(id: int):
